@@ -2,6 +2,8 @@ package dev.brumagin.app.data;
 
 import dev.brumagin.app.entities.Expense;
 
+import java.util.List;
+
 public class ExpenseDAOPostgresImpl implements ExpenseDAO{
     @Override
     public Expense createExpense(Expense expense) {
@@ -10,6 +12,11 @@ public class ExpenseDAOPostgresImpl implements ExpenseDAO{
 
     @Override
     public Expense getExpenseById(String Id) {
+        return null;
+    }
+
+    @Override
+    public List<Expense> getAllExpenses() {
         return null;
     }
 

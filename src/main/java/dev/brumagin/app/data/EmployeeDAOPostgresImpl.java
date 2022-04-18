@@ -2,6 +2,8 @@ package dev.brumagin.app.data;
 
 import dev.brumagin.app.entities.Employee;
 
+import java.util.List;
+
 public class EmployeeDAOPostgresImpl implements EmployeeDAO{
     @Override
     public Employee createEmployee(Employee employee) {
@@ -10,6 +12,11 @@ public class EmployeeDAOPostgresImpl implements EmployeeDAO{
 
     @Override
     public Employee getEmployeeById(int Id) {
+        return null;
+    }
+
+    @Override
+    public List<Employee> getAllEmployees() {
         return null;
     }
 
