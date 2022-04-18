@@ -3,7 +3,7 @@ package dev.brumagin.app.utilities;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class Connection {
+public class ConnectionUtility {
     
     public static java.sql.Connection createConnection() {
         java.sql.Connection connection = null;
