@@ -10,9 +10,8 @@ import lombok.NoArgsConstructor;
 public class Expense {
 
     private String expenseId;
-    private int employeeId;
     private String description;
     private double cost;
     private ExpenseStatus status;
-
+    private int employeeId;
 }

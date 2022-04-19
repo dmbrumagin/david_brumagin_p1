@@ -12,7 +12,7 @@ public class Logger {
     public static void log(String message, LogLevel level){
 
         String logMessage = level.name() +" " +  message + " " + new Date() + "\n";
-        String path = "C:\\Users\\dbrum\\IdeaProjects\\Project1\\src\\main\\java\\dev\\brumagin\\expenses.log";
+        String path = "C:\\Users\\dbrum\\IdeaProjects\\Project1\\src\\main\\java\\dev\\brumagin\\app\\expenses.log";
 
         try {
             Files.write(Paths.get(path),

@@ -8,12 +8,12 @@ import java.util.List;
 public interface ExpenseService {
 
     boolean createExpenses (List<Expense> expenses);
-    boolean createExpense(int employeeId,String description, double cost);
+    boolean createExpense(Expense expense);
     List<Expense> getAllExpenses();
     List<Expense> getAllExpenses(ExpenseStatus status);
-    List<Expense> getAllExpenses(ExpenseStatus status,int employeeId);
-    boolean updateAllExpenseStatus(int employeeId, ExpenseStatus status);
-    boolean updateExpenseStatus(Expense expense, int employeeId, ExpenseStatus status);
-    boolean deleteExpenses(List<Expense> expenses);
+    List<Expense> getAllExpenses(ExpenseStatus status, int employeeId);
+    boolean updateAllExpenseStatus(ExpenseStatus status, int employeeId);
+    boolean updateExpenseStatus(ExpenseStatus status, Expense expense );
+    List<Expense> deleteExpenses(List<Expense> expenses);
     boolean deleteExpense(Expense expense);
 }

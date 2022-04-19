@@ -8,7 +8,7 @@ public class ConnectionUtility {
     public static java.sql.Connection createConnection() {
         java.sql.Connection connection = null;
         try {
-            String url = System.getenv("BANKINGDB");
+            String url = System.getenv("EXPENSEDB");
             connection = DriverManager.getConnection(url);
 
         } catch (SQLException e) {

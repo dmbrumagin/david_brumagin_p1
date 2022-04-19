@@ -7,10 +7,10 @@ import java.util.List;
 public interface EmployeeService {
 
     boolean createEmployees(List<Employee> employees);
-    boolean createEmployee(String firstName, String lastName);
+    boolean createEmployee(Employee employee);
     Employee getEmployeeById(int id);
-    Employee getAllEmployees();
-    // not required for routes boolean updateEmployee(Employee employee);
-    boolean deleteEmployee(Employee employee);
+    List<Employee> getAllEmployees();
+    boolean updateEmployee(Employee employee);
+    boolean deleteEmployee(int employeeId);
 
 }

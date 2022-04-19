@@ -1,4 +1,69 @@
 package data;
 
+import dev.brumagin.app.data.EmployeeDAO;
+import dev.brumagin.app.data.EmployeeDAOPostgresImpl;
+import dev.brumagin.app.data.ExpenseDAO;
+import dev.brumagin.app.data.ExpenseDAOPostgresImpl;
+import dev.brumagin.app.entities.Employee;
+import dev.brumagin.app.entities.Expense;
+import dev.brumagin.app.entities.ExpenseStatus;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+
 public class ExpenseDAOTests {
+
+    static EmployeeDAO employeeDAO = new EmployeeDAOPostgresImpl();
+    static ExpenseDAO expenseDAO  = new ExpenseDAOPostgresImpl();
+    @Test
+    void create_expense() {
+        Employee employee = new Employee(0,"Bob","Dylan");
+        employee = employeeDAO.createEmployee(employee);
+        Expense expense = new Expense("","Ferrari",64333.34, ExpenseStatus.PENDING,employee.getId());
+        expense = expenseDAO.createExpense(expense);
+        Assertions.assertNotEquals("",expense.getExpenseId());
+    }
+
+    @Test
+    void get_expense_by_id(){
+        Employee employee = new Employee(0,"Circle","Lover");
+        employee = employeeDAO.createEmployee(employee);
+        Expense expense = new Expense("","pie",3.14, ExpenseStatus.PENDING,employee.getId());
+        Expense compareExpense = expenseDAO.createExpense(expense);
+        Assertions.assertEquals(compareExpense.getExpenseId(),expenseDAO.getExpenseById(expense.getExpenseId()).getExpenseId());
+        Assertions.assertFalse(employeeDAO.deleteEmployee(employee.getId()));
+    }
+
+    @Test
+    void get_all_expenses(){
+        Employee employee = new Employee(0,"Bob","Dylan");
+        employeeDAO.createEmployee(employee);
+        Expense expense = new Expense("","pie",3.14, ExpenseStatus.PENDING,employee.getId());
+        expenseDAO.createExpense(expense);
+        List<Expense> expenses = expenseDAO.getAllExpenses();
+
+        Assertions.assertNotEquals(expenses.size(),0);
+    }
+
+    @Test
+    void update_expense(){
+        Employee employee = new Employee(0,"Bob","Dylan");
+        employee =   employeeDAO.createEmployee(employee);
+        Expense expense = new Expense("","pie",3.14, ExpenseStatus.PENDING,employee.getId());
+        expenseDAO.createExpense(expense);
+        expense.setDescription("test");
+        expenseDAO.updateExpense(expense);
+        Assertions.assertEquals("test",expenseDAO.getExpenseById(expense.getExpenseId()).getDescription());
+    }
+
+    @Test
+    void delete_expense(){
+        Employee employee = new Employee(0,"Bob","Dylan");
+        employee =   employeeDAO.createEmployee(employee);
+        Expense expense = new Expense("","pie",3.14, ExpenseStatus.PENDING,employee.getId());
+        expenseDAO.createExpense(expense);
+        Assertions.assertTrue( expenseDAO.deleteExpense(expense));
+    }
+
 }
