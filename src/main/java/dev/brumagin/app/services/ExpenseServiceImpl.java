@@ -20,7 +20,6 @@ public class ExpenseServiceImpl implements ExpenseService{
 
     @Override
     public boolean createExpense(Expense expense) {
-        System.out.println(expense);
         return expenseDAO.createExpense(expense) !=null;
     }
 
@@ -57,6 +56,7 @@ public class ExpenseServiceImpl implements ExpenseService{
 
     @Override
     public boolean deleteExpense(Expense expense) {
+        System.out.println(expense);
         if(expenseDAO.getExpenseById(expense.getExpenseId()).getStatus().name()=="PENDING")
             return expenseDAO.deleteExpense(expense);
         else{

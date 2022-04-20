@@ -36,24 +36,26 @@ public class ExpenseDAOPostgresImpl implements ExpenseDAO{
 
     @Override
     public Expense getExpenseById(String Id) {
-        System.out.println(Id);
         try {
             Connection connection = ConnectionUtility.createConnection();
             String statement = "select * from expense where expense_id = ?;";
             PreparedStatement ps = connection.prepareStatement(statement);
-            ps.setString(1,Id);
+            ps.setString(1, Id);
             ResultSet rs = ps.executeQuery();
+            Expense expense = null;
             rs.next();
-            Expense expense = new Expense();
+            expense = new Expense();
             expense.setExpenseId(Id);
             expense.setStatus(ExpenseStatus.valueOf(rs.getString("status")));
             expense.setCost(rs.getDouble("cost"));
             expense.setDescription(rs.getString("description"));
             expense.setEmployeeId(rs.getInt("employee_id"));
+
             return expense;
         }
         catch (SQLException e){
             Logger.log("**The expense was not found; please check database access and parameters.**\n"+Id, LogLevel.WARNING);
+            //TODO re-throw? handle exception in main for context.result?
             return null;
         }
     }

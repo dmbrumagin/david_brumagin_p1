@@ -85,8 +85,7 @@ public class EmployeeDAOPostgresImpl implements EmployeeDAO{
             ps.setString(1, employee.getFirstName());
             ps.setString(2, employee.getLastName());
             ps.setInt(3, employee.getId());
-            ps.execute();
-            return true;
+            return ps.executeUpdate() != 0;
         }
         catch (SQLException e){
             Logger.log("**The employee was not found; please check database access and parameters.**\n" + employee,LogLevel.WARNING);

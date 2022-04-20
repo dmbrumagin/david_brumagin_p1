@@ -1,6 +1,7 @@
 package dev.brumagin.app.api;
 
 import com.google.gson.Gson;
+import dev.brumagin.app.data.ExpenseLedgerContainsEmployee;
 import dev.brumagin.app.entities.Employee;
 import dev.brumagin.app.entities.Expense;
 import dev.brumagin.app.entities.ExpenseStatus;
@@ -74,26 +75,39 @@ public class ReimbursementApp {
             String body = context.body();
             Employee employee = gson.fromJson(body, Employee.class);
             int id = Integer.parseInt(context.pathParam("id"));
+            employee.setId(id);
 
-            if (employeeService.updateEmployee(employee)) {
-                String json = gson.toJson(employeeService.getEmployeeById(id));
-                context.status(200);
-                context.result(json);
-            } else {
-                context.status(404);
-                context.result("Did not find employee to update: " + id);
+            try {
+                if (employeeService.updateEmployee(employee)) {
+                    String json = gson.toJson(employeeService.getEmployeeById(id));
+                    context.status(200);
+                    context.result(json);
+                } else {
+                    context.status(404);
+                    context.result("Did not find employee to update: " + id);
+                }
+            }
+            catch (ExpenseLedgerContainsEmployee e){
+                context.status(409);
+                context.result("Employee could not be deleted because they have recorded expenses: " + id);
             }
         });
 
         app.delete("/employees/{id}",context -> {
             int id = Integer.parseInt(context.pathParam("id"));
 
-            if (employeeService.deleteEmployee(id)) {
-                context.status(200);
-                context.result("Employee was deleted: " + id);
-            } else {
-                context.status(404);
-                context.result("Did not find employee to delete: " + id);
+            try {
+                if (employeeService.deleteEmployee(id)) {
+                    context.status(200);
+                    context.result("Employee was deleted: " + id);
+                } else {
+                    context.status(404);
+                    context.result("Did not find employee to delete: " + id);
+                }
+            }
+            catch (ExpenseLedgerContainsEmployee e){
+                context.status(409);
+                context.result("Employee could not be deleted because they have recorded expenses: " + id);
             }
         });
 
