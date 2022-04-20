@@ -18,10 +18,10 @@ public class ExpenseServiceImpl implements ExpenseService{
         expenseDAO = new ExpenseDAOPostgresImpl();
     }
 
-    @Override
+   /* @Override
     public boolean createExpenses(List<Expense> expenses) {
         return false;
-    }
+    }*/
 
     @Override
     public boolean createExpense(Expense expense) {
@@ -41,14 +41,21 @@ public class ExpenseServiceImpl implements ExpenseService{
         return expenses;
     }
 
-    @Override
+  /*  @Override
     public List<Expense> getAllExpenses(ExpenseStatus status, int employeeId) {
         List<Expense> expenses = expenseDAO.getAllExpenses();
-        expenses.forEach(d->expenses.removeIf(f->f.getStatus()!=status));
+        expenses.removeIf(f->f.getStatus()!=status || f.getEmployeeId() !=employeeId);
+        return expenses;
+    }*/
+
+    @Override
+    public List<Expense> getAllExpenses( int employeeId) {
+        List<Expense> expenses = expenseDAO.getAllExpenses();
+        expenses.removeIf(f-> f.getEmployeeId() !=employeeId);
         return expenses;
     }
 
-    @Override
+   /* @Override
     public boolean updateAllExpenseStatus( ExpenseStatus status,int employeeId) {
         List<Expense> expenses = getAllExpenses(ExpenseStatus.PENDING,employeeId);
         for(Expense expense :expenses){
@@ -56,17 +63,21 @@ public class ExpenseServiceImpl implements ExpenseService{
             expenseDAO.updateExpense(expense);
         }
         return false;
-    }
+    }*/
 
     @Override
-    public boolean updateExpenseStatus( ExpenseStatus status,Expense expense) {
-        expense.setStatus(status);
-        expenseDAO.updateExpense(expense);
-
-        return false;
+    public boolean updateExpense(Expense expense,ExpenseStatus status) {
+        if(expenseDAO.getExpenseById(expense.getExpenseId()).getStatus().name()=="PENDING") {
+            expense.setStatus(status);
+            return expenseDAO.updateExpense(expense);
+        }
+        else {
+            Logger.log("Failed to update expense: \n"+ expense +"\n Status was not PENDING", LogLevel.INFO);
+            return false;
+        }
     }
 
-    @Override
+    /*@Override
     public List<Expense> deleteExpenses(List<Expense> expenses) {
         List<Expense> compare = getAllExpenses(ExpenseStatus.PENDING);
         for(Expense expense : expenses){
@@ -80,7 +91,7 @@ public class ExpenseServiceImpl implements ExpenseService{
 
         }
         return expenses;  //failed to remove these expenses
-    }
+    }*/
 
     @Override
     public boolean deleteExpense(Expense expense) {

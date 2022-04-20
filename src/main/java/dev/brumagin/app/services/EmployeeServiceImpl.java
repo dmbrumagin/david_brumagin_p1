@@ -19,7 +19,7 @@ public class EmployeeServiceImpl implements EmployeeService{
         expenseDAO = new ExpenseDAOPostgresImpl();
     }
 
-    @Override
+    /*@Override
     public boolean createEmployees(List<Employee> employees) {
         int size = 0;
         for(Employee e : employees){
@@ -27,7 +27,7 @@ public class EmployeeServiceImpl implements EmployeeService{
           size++;
         }
         return size!=0;
-    }
+    }*/
 
     @Override
     public boolean createEmployee(Employee employee) {
@@ -46,24 +46,24 @@ public class EmployeeServiceImpl implements EmployeeService{
 
     @Override
     public boolean updateEmployee(Employee employee) {
-        if(!employeeReimbursed(employee.getId()))
+        if(canEdit(employee.getId()))
             return employeeDAO.updateEmployee(employee);
         return false;
     }
 
     @Override
     public boolean deleteEmployee(int employeeId) {
-        if(!employeeReimbursed(employeeId))
+        if(canEdit(employeeId))
             return employeeDAO.deleteEmployee(employeeId);
         return false;
     }
 
-    public boolean employeeReimbursed(int employeeId){
+    public boolean canEdit(int employeeId){
         List<Expense> expenses = expenseDAO.getAllExpenses();
         for(Expense e : expenses){
             if(e.getEmployeeId()==employeeId)
-                return true; //don't edit if they have an expense reimbursement in the ledger //TODO throw custom exception
+                return false; //don't edit if they have an expense reimbursement in the ledger //TODO throw custom exception
         }
-        return false;
+        return true;
     }
 }
