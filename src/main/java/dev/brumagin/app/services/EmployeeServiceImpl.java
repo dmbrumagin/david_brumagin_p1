@@ -11,23 +11,13 @@ import java.util.List;
 
 public class EmployeeServiceImpl implements EmployeeService{
 
-    private EmployeeDAO employeeDAO;
-    private ExpenseDAO expenseDAO;
+    private final EmployeeDAO employeeDAO;
+    private final ExpenseDAO expenseDAO;
 
     public EmployeeServiceImpl(){
         employeeDAO = new EmployeeDAOPostgresImpl();
         expenseDAO = new ExpenseDAOPostgresImpl();
     }
-
-    /*@Override
-    public boolean createEmployees(List<Employee> employees) {
-        int size = 0;
-        for(Employee e : employees){
-          employeeDAO.createEmployee(e);
-          size++;
-        }
-        return size!=0;
-    }*/
 
     @Override
     public boolean createEmployee(Employee employee) {
@@ -62,7 +52,7 @@ public class EmployeeServiceImpl implements EmployeeService{
         List<Expense> expenses = expenseDAO.getAllExpenses();
         for(Expense e : expenses){
             if(e.getEmployeeId()==employeeId)
-                return false; //don't edit if they have an expense reimbursement in the ledger //TODO throw custom exception
+                return false; //don't edit if they have an expense reimbursement in the ledger //TODO throw custom exception / handle so user can see error
         }
         return true;
     }

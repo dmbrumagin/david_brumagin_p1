@@ -16,6 +16,7 @@ public class ExpenseDAOTests {
 
     static EmployeeDAO employeeDAO = new EmployeeDAOPostgresImpl();
     static ExpenseDAO expenseDAO  = new ExpenseDAOPostgresImpl();
+
     @Test
     void create_expense() {
         Employee employee = new Employee(0,"Bob","Dylan");
@@ -23,6 +24,8 @@ public class ExpenseDAOTests {
         Expense expense = new Expense("","Ferrari",64333.34, ExpenseStatus.PENDING,employee.getId());
         expense = expenseDAO.createExpense(expense);
         Assertions.assertNotEquals("",expense.getExpenseId());
+        expenseDAO.deleteExpense(expense);
+        employeeDAO.deleteEmployee(employee.getId());
     }
 
     @Test
@@ -33,6 +36,8 @@ public class ExpenseDAOTests {
         Expense compareExpense = expenseDAO.createExpense(expense);
         Assertions.assertEquals(compareExpense.getExpenseId(),expenseDAO.getExpenseById(expense.getExpenseId()).getExpenseId());
         Assertions.assertFalse(employeeDAO.deleteEmployee(employee.getId()));
+        expenseDAO.deleteExpense(expense);
+        employeeDAO.deleteEmployee(employee.getId());
     }
 
     @Test
@@ -42,8 +47,9 @@ public class ExpenseDAOTests {
         Expense expense = new Expense("","pie",3.14, ExpenseStatus.PENDING,employee.getId());
         expenseDAO.createExpense(expense);
         List<Expense> expenses = expenseDAO.getAllExpenses();
-
         Assertions.assertNotEquals(expenses.size(),0);
+        expenseDAO.deleteExpense(expense);
+        employeeDAO.deleteEmployee(employee.getId());
     }
 
     @Test
@@ -55,6 +61,8 @@ public class ExpenseDAOTests {
         expense.setDescription("test");
         expenseDAO.updateExpense(expense);
         Assertions.assertEquals("test",expenseDAO.getExpenseById(expense.getExpenseId()).getDescription());
+        expenseDAO.deleteExpense(expense);
+        employeeDAO.deleteEmployee(employee.getId());
     }
 
     @Test
@@ -63,7 +71,9 @@ public class ExpenseDAOTests {
         employee =   employeeDAO.createEmployee(employee);
         Expense expense = new Expense("","pie",3.14, ExpenseStatus.PENDING,employee.getId());
         expenseDAO.createExpense(expense);
+        System.out.println(expense);
         Assertions.assertTrue( expenseDAO.deleteExpense(expense));
+        employeeDAO.deleteEmployee(employee.getId());
     }
 
 }

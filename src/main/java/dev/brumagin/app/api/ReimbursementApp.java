@@ -8,8 +8,10 @@ import dev.brumagin.app.services.EmployeeService;
 import dev.brumagin.app.services.EmployeeServiceImpl;
 import dev.brumagin.app.services.ExpenseService;
 import dev.brumagin.app.services.ExpenseServiceImpl;
+import dev.brumagin.app.utilities.ConnectionUtility;
 import io.javalin.Javalin;
 import java.lang.*;
+import java.sql.Connection;
 import java.util.Arrays;
 import java.util.List;
 
@@ -19,9 +21,21 @@ public class ReimbursementApp {
     static ExpenseService expenseService = new ExpenseServiceImpl();
     static Gson gson = new Gson();
 
-    public static void main (String args[]){
+    public static void main (String[] args){
 
         Javalin app = Javalin.create();
+
+        app.get("/", context -> {
+            Connection connection = ConnectionUtility.createConnection();
+            if(connection != null){
+                context.status(200);
+                context.result("Application connects to database.");
+            }
+            else {
+                context.status(400);
+                context.result("Application cannot connect to database.");
+            }
+        });
 
         app.post("/employees", context -> {
             String body = context.body();
@@ -45,12 +59,14 @@ public class ReimbursementApp {
             int id = Integer.parseInt(context.pathParam("id"));
             Employee employee = employeeService.getEmployeeById(id);
 
-            if (employee == null) {
+            if (employee != null) {
+                String json = gson.toJson(employee);
+                context.status(200);
+                context.result(json);
+
+            } else {
                 context.status(404);
                 context.result("Did not find employee: " + id);
-            } else {
-                String json = gson.toJson(employee);
-                context.result(json);
             }
         });
 
@@ -61,6 +77,7 @@ public class ReimbursementApp {
 
             if (employeeService.updateEmployee(employee)) {
                 String json = gson.toJson(employeeService.getEmployeeById(id));
+                context.status(200);
                 context.result(json);
             } else {
                 context.status(404);

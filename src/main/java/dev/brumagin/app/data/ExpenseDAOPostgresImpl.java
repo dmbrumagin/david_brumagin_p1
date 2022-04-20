@@ -108,7 +108,7 @@ public class ExpenseDAOPostgresImpl implements ExpenseDAO{
     public boolean deleteExpense(Expense expense) {
         try{
             Connection connection = ConnectionUtility.createConnection();
-            String statement = "delete * from expense where expense_id = ?;";
+            String statement = "delete from expense where expense_id = ?;";
             PreparedStatement ps = connection.prepareStatement(statement);
             ps.setString(1,expense.getExpenseId());
             ps.execute();

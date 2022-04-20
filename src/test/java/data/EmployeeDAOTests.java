@@ -25,6 +25,7 @@ public class EmployeeDAOTests {
         Employee compare = employeeDAO.getEmployeeById(employee.getId());
         Assertions.assertEquals(compare.getFirstName(),employee.getFirstName());
         employeeDAO.deleteEmployee(employee.getId());
+        employeeDAO.deleteEmployee(compare.getId());
     }
 
     @Test
@@ -55,14 +56,10 @@ public class EmployeeDAOTests {
     }
 
     @Test
-    void delete_all_employees(){
-        List<Employee> employees = employeeDAO.getAllEmployees();
-        for(Employee employee: employees){
-            employeeDAO.deleteEmployee(employee.getId());
-        }
-        List<Employee> employees2 = employeeDAO.getAllEmployees();
-        Assertions.assertEquals(0,employees2.size());
-
+    void delete_employee(){
+        Employee employee = new Employee(0,"Bob","Dylan");
+        employeeDAO.createEmployee(employee);
+        Assertions.assertTrue(employeeDAO.deleteEmployee(employee.getId()));
     }
 
 
