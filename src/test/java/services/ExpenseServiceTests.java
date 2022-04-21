@@ -1,4 +1,4 @@
-package test;
+package services;
 
 class ExpenseServiceTests {
 }
