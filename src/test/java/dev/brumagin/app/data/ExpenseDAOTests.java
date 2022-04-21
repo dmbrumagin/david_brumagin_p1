@@ -12,13 +12,13 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-class ExpenseDAOTests {
+public class ExpenseDAOTests {
 
     static EmployeeDAO employeeDAO = new EmployeeDAOPostgresImpl();
     static ExpenseDAO expenseDAO  = new ExpenseDAOPostgresImpl();
 
     @Test
-    void create_expense() {
+    public void create_expense() {
         Employee employee = new Employee(0,"Bob","Dylan");
         employee = employeeDAO.createEmployee(employee);
         Expense expense = new Expense(0,"Ferrari",64333.34, ExpenseStatus.PENDING,employee.getId());
