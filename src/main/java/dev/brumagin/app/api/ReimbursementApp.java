@@ -181,7 +181,6 @@ public class ReimbursementApp {
             int id = Integer.parseInt(context.pathParam("id"));
             Expense expense = gson.fromJson(body, Expense.class);
             expense.setEmployeeId(id);
-//TODO limit to id
             if (expenseService.updateExpense(expense, ExpenseStatus.APPROVED)) {
                 context.status(200);
                 context.result("Approved PENDING expense:" + expense + " for employee: " + id);
@@ -196,7 +195,6 @@ public class ReimbursementApp {
             int id = Integer.parseInt(context.pathParam("id"));
             Expense expense = gson.fromJson(body, Expense.class);
             expense.setEmployeeId(id);
-//TODO limit to id
             if (expenseService.updateExpense(expense, ExpenseStatus.DENIED)) {
                 context.status(200);
                 context.result("Denied PENDING expense:" + expense + " for employee: " + id);
