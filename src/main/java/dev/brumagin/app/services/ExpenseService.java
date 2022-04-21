@@ -9,6 +9,7 @@ import java.util.List;
 public interface ExpenseService {
 
     boolean createExpense(Expense expense) throws NegativeExpenseException;
+    Expense getExpenseById(int expenseId);
     List<Expense> getAllExpenses();
     List<Expense> getAllExpenses(ExpenseStatus status);
     List<Expense> getAllExpenses(int employeeId);

@@ -24,7 +24,7 @@ public class ExpenseDAOPostgresImpl implements ExpenseDAO{
             ps.execute();
             ResultSet rs = ps.getGeneratedKeys();
             rs.next();
-            String id = rs.getString("expense_id");
+            int id = rs.getInt("expense_id");
             expense.setExpenseId(id);
             return expense;
         }
@@ -35,17 +35,17 @@ public class ExpenseDAOPostgresImpl implements ExpenseDAO{
     }
 
     @Override
-    public Expense getExpenseById(String Id) {
+    public Expense getExpenseById(int expenseId) {
         try {
             Connection connection = ConnectionUtility.createConnection();
             String statement = "select * from expense where expense_id = ?;";
             PreparedStatement ps = connection.prepareStatement(statement);
-            ps.setString(1, Id);
+            ps.setInt(1, expenseId);
             ResultSet rs = ps.executeQuery();
-            Expense expense = null;
+            Expense expense;
             rs.next();
             expense = new Expense();
-            expense.setExpenseId(Id);
+            expense.setExpenseId(expenseId);
             expense.setStatus(ExpenseStatus.valueOf(rs.getString("status")));
             expense.setCost(rs.getDouble("cost"));
             expense.setDescription(rs.getString("description"));
@@ -54,23 +54,23 @@ public class ExpenseDAOPostgresImpl implements ExpenseDAO{
             return expense;
         }
         catch (SQLException e){
-            Logger.log("**The expense was not found; please check database access and parameters.**\n"+Id, LogLevel.WARNING);
-            //TODO re-throw? handle exception in main for context.result?
+            Logger.log("**The expense was not found; please check database access and parameters.**\n"+expenseId, LogLevel.WARNING);
             return null;
         }
     }
 
     @Override
     public List<Expense> getAllExpenses() {
+        List<Expense> expenses = new ArrayList<>();
         try {
             Connection connection = ConnectionUtility.createConnection();
             String statement = "select * from expense;";
             PreparedStatement ps = connection.prepareStatement(statement);
             ResultSet rs = ps.executeQuery();
-            List<Expense> expenses = new ArrayList();
+
             while(rs.next()){
                 Expense expense = new Expense();
-                expense.setExpenseId(rs.getString("expense_id"));
+                expense.setExpenseId(rs.getInt("expense_id"));
                 expense.setStatus(ExpenseStatus.valueOf(rs.getString("status")));
                 expense.setCost(rs.getDouble("cost"));
                 expense.setDescription(rs.getString("description"));
@@ -81,7 +81,7 @@ public class ExpenseDAOPostgresImpl implements ExpenseDAO{
         }
         catch(SQLException e){
             Logger.log("Expenses were not found; please check database access and that an expense exists.**\n", LogLevel.WARNING);
-            return null;
+            return expenses;
         }
     }
 
@@ -96,7 +96,7 @@ public class ExpenseDAOPostgresImpl implements ExpenseDAO{
             ps.setDouble(2,expense.getCost());
             ps.setString(3,expense.getStatus().name());
             ps.setInt(4,expense.getEmployeeId());
-            ps.setString(5,expense.getExpenseId());
+            ps.setInt(5,expense.getExpenseId());
             ps.execute();
             return true;
         }
@@ -112,7 +112,7 @@ public class ExpenseDAOPostgresImpl implements ExpenseDAO{
             Connection connection = ConnectionUtility.createConnection();
             String statement = "delete from expense where expense_id = ?;";
             PreparedStatement ps = connection.prepareStatement(statement);
-            ps.setString(1,expense.getExpenseId());
+            ps.setInt(1,expense.getExpenseId());
             ps.execute();
             return true;
         }

@@ -7,9 +7,7 @@ import dev.brumagin.app.entities.ExpenseStatus;
 import dev.brumagin.app.entities.NegativeExpenseException;
 import dev.brumagin.app.utilities.LogLevel;
 import dev.brumagin.app.utilities.Logger;
-
 import java.util.List;
-import java.util.stream.Stream;
 
 public class ExpenseServiceImpl implements ExpenseService{
 
@@ -24,6 +22,11 @@ public class ExpenseServiceImpl implements ExpenseService{
         if (expense.getCost()<0)
             throw new NegativeExpenseException();
         return expenseDAO.createExpense(expense) !=null;
+    }
+
+    @Override
+    public Expense getExpenseById(int expenseId){
+        return expenseDAO.getExpenseById(expenseId);
     }
 
     @Override
@@ -61,7 +64,6 @@ public class ExpenseServiceImpl implements ExpenseService{
 
     @Override
     public boolean deleteExpense(Expense expense) {
-        System.out.println(expense);
         if(expenseDAO.getExpenseById(expense.getExpenseId()).getStatus().name().equals("PENDING"))
             return expenseDAO.deleteExpense(expense);
         else{

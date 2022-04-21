@@ -33,34 +33,35 @@ public class EmployeeDAOPostgresImpl implements EmployeeDAO{
     }
 
     @Override
-    public Employee getEmployeeById(int Id) {
+    public Employee getEmployeeById(int employeeId) {
         try {
             Connection connection = ConnectionUtility.createConnection();
             String statement = "select * from employee where employee_id=?;";
             PreparedStatement ps = connection.prepareStatement(statement);
-            ps.setInt(1, Id);
+            ps.setInt(1, employeeId);
             ResultSet rs = ps.executeQuery();
             rs.next();
             Employee employee = new Employee();
-            employee.setId(Id);
+            employee.setId(employeeId);
             employee.setFirstName(rs.getString("first_name"));
             employee.setLastName(rs.getString("last_name"));
             return employee;
         }
         catch (SQLException e){
-            Logger.log("**The employee was not found; please check database access and parameters.**\nemployee id: " +Id,LogLevel.WARNING);
+            Logger.log("**The employee was not found; please check database access and parameters.**\nemployee id: " +employeeId,LogLevel.WARNING);
             return null;
         }
     }
 
     @Override
     public List<Employee> getAllEmployees() {
+        List<Employee> employees = new ArrayList<>();
         try {
             Connection connection = ConnectionUtility.createConnection();
             String statement = "select * from employee;";
             PreparedStatement ps = connection.prepareStatement(statement);
             ResultSet rs = ps.executeQuery();
-            List<Employee> employees = new ArrayList();
+
             while(rs.next()) {
                 Employee employee = new Employee();
                 employee.setId(rs.getInt("employee_id"));
@@ -72,7 +73,7 @@ public class EmployeeDAOPostgresImpl implements EmployeeDAO{
         }
         catch (SQLException e){
             Logger.log("**There are no employees; please check database access.**",LogLevel.WARNING);
-            return null;
+            return employees;
         }
     }
 

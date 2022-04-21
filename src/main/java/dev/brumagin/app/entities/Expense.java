@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Expense {
 
-    private String expenseId;
+    private int expenseId;
     private String description;
     private double cost;
     private ExpenseStatus status;

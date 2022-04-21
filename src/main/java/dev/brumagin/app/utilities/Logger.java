@@ -1,5 +1,7 @@
 package dev.brumagin.app.utilities;
 
+import lombok.NoArgsConstructor;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -7,6 +9,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Date;
 
+@NoArgsConstructor
 public class Logger {
 
     public static void log(String message, LogLevel level){
@@ -19,7 +22,7 @@ public class Logger {
                     logMessage.getBytes(StandardCharsets.UTF_8),
                     StandardOpenOption.APPEND);
         } catch (IOException e) {
-            e.printStackTrace();
+           // e.printStackTrace();
         }
 
     }

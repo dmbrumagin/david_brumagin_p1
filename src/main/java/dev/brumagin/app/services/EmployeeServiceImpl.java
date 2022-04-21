@@ -49,7 +49,6 @@ public class EmployeeServiceImpl implements EmployeeService{
     public boolean canEdit(int employeeId) throws LedgerContainsEmployeeException {
         List<Expense> expenses = expenseDAO.getAllExpenses();
         for(Expense e : expenses){
-            System.out.println(e);
             if(e.getEmployeeId()==employeeId)
                 throw new LedgerContainsEmployeeException();
         }

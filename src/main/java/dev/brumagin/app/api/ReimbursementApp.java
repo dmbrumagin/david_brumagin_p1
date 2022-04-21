@@ -8,7 +8,6 @@ import dev.brumagin.app.services.ExpenseService;
 import dev.brumagin.app.services.ExpenseServiceImpl;
 import dev.brumagin.app.utilities.ConnectionUtility;
 import io.javalin.Javalin;
-import java.lang.*;
 import java.sql.Connection;
 import java.util.Arrays;
 import java.util.List;
@@ -87,7 +86,7 @@ public class ReimbursementApp {
             }
             catch (LedgerContainsEmployeeException e){
                 context.status(409);
-                context.result("Employee could not be deleted because they have recorded expenses: " + id);
+                context.result("Employee could not be changed because they have recorded expenses: " + id);
             }
         });
 
@@ -109,22 +108,19 @@ public class ReimbursementApp {
             }
         });
 
-        app.post("/expenses/", context -> {
+        app.post("/expenses", context -> {
             String body = context.body();
             Expense expense = gson.fromJson(body, Expense.class);
-
-            try {
-                if (expenseService.createExpense(expense)) {
-                    context.status(201);
-                    context.result("Created a new expense for employee: " + expense.getEmployeeId() + ".");
-                } else {
-                    context.status(400);
-                    context.result("Did not create a new expense for employee: " + expense.getEmployeeId() + ".");
-                }
-            }
-            catch (NegativeExpenseException e){
+            if (expense.getCost() < 0) {
                 context.status(400);
-                context.result("Expense was negative. Did not create a new expense: "+expense);
+                context.result("Expense was negative. Did not create a new expense: " + expense);
+            }
+            else if (expenseService.createExpense(expense)) {
+                context.status(201);
+                context.result("Created a new expense for employee: " + expense.getEmployeeId() + ".");
+            } else {
+                context.status(400);
+                context.result("Did not create a new expense for employee: " + expense.getEmployeeId() + ".");
             }
         });
 
@@ -145,11 +141,11 @@ public class ReimbursementApp {
 
         app.get("/expenses/{id}", context -> {
             int id = Integer.parseInt(context.pathParam("id"));
-            List<Expense> expenses = expenseService.getAllExpenses(id);
+            Expense expense = expenseService.getExpenseById(id);
 
-            if (expenses.size() != 0) {
+            if (expense != null) {
                 context.status(200);
-                context.result(gson.toJson(expenses));
+                context.result(gson.toJson(expense));
             } else {
                 context.status(404);
                 context.result("Did not find an expense for employee: " + id + ".");
@@ -160,19 +156,17 @@ public class ReimbursementApp {
             String body = context.body();
             int id = Integer.parseInt(context.pathParam("id"));
             Expense expense = gson.fromJson(body, Expense.class);
+            expense.setExpenseId(id);
             if (expense.getCost() < 0) {
                 context.status(400);
                 context.result("Expense was negative. Did not create a new expense: " + expense);
-
             }
-            expense.setEmployeeId(id);
-
-            if (expenseService.updateExpense(expense, ExpenseStatus.PENDING)) {
+            else if (expenseService.updateExpense(expense, ExpenseStatus.PENDING)) {
                 context.status(200);
-                context.result("Updated expense for " + id + ".\n" + expense);
+                context.result("Updated expense: " + expense);
             } else {
                 context.status(404);
-                context.result("Did not find an expense: " + expense + " for employee: " + id + ".");
+                context.result("Did not find expense: " + id);
             }
 
         });
@@ -181,13 +175,13 @@ public class ReimbursementApp {
             String body = context.body();
             int id = Integer.parseInt(context.pathParam("id"));
             Expense expense = gson.fromJson(body, Expense.class);
-            expense.setEmployeeId(id);
+            expense.setExpenseId(id);
             if (expenseService.updateExpense(expense, ExpenseStatus.APPROVED)) {
                 context.status(200);
-                context.result("Approved PENDING expense:" + expense + " for employee: " + id);
+                context.result("Approved PENDING expense:" + expense);
             } else {
                 context.status(404);
-                context.result("Did not find the PENDING expense for employee: " + id + ".+\n expense: " + expense);
+                context.result("Did not find the PENDING expense: " + expense);
             }
         });
 
@@ -195,13 +189,13 @@ public class ReimbursementApp {
             String body = context.body();
             int id = Integer.parseInt(context.pathParam("id"));
             Expense expense = gson.fromJson(body, Expense.class);
-            expense.setEmployeeId(id);
+            expense.setExpenseId(id);
             if (expenseService.updateExpense(expense, ExpenseStatus.DENIED)) {
                 context.status(200);
-                context.result("Denied PENDING expense:" + expense + " for employee: " + id);
+                context.result("Denied PENDING expense:" + expense);
             } else {
                 context.status(404);
-                context.result("Did not find the PENDING expense for employee: " + id + ".+\n expense: " + expense);
+                context.result("Did not find the PENDING expense for employee:" + expense);
             }
         });
 
@@ -209,15 +203,48 @@ public class ReimbursementApp {
             String body = context.body();
             Expense expense = gson.fromJson(body, Expense.class);
             int id = Integer.parseInt(context.pathParam("id"));
-            expense.setEmployeeId(id);
+            expense.setExpenseId(id);
 
             if (expenseService.deleteExpense(expense)) {
                 context.status(200);
-                context.result("Expense deleted." + expense);
+                context.result("Expense deleted: " + expense);
             } else {
                 context.status(404);
-                context.result("Did not find PENDING expense for employee: " + id + " to delete.\n" + expense);
+                context.result("Did not find PENDING expense: " + expense);
+            }
+        });
 
+        app.post("/employees/{id}/expenses", context -> {
+            String body = context.body();
+            int id = Integer.parseInt(context.pathParam("id"));
+            Expense expense = gson.fromJson(body, Expense.class);
+            expense.setEmployeeId(id);
+
+            try {
+                if (expenseService.createExpense(expense)) {
+                    context.status(201);
+                    context.result("Created a new expense for employee: " + expense.getEmployeeId());
+                } else {
+                    context.status(400);
+                    context.result("Did not create a new expense for employee: " + expense.getEmployeeId());
+                }
+            }
+            catch (NegativeExpenseException e){
+                context.status(400);
+                context.result("Expense was negative. Did not create a new expense: "+expense);
+            }
+        });
+
+        app.get("/employees/{id}/expenses", context -> {
+            int id = Integer.parseInt(context.pathParam("id"));
+            List<Expense> expenses = expenseService.getAllExpenses(id);
+
+            if (expenses.size() != 0) {
+                context.status(200);
+                context.result(gson.toJson(expenses));
+            } else {
+                context.status(404);
+                context.result("Did not find an expense for employee: " + id);
             }
         });
 
