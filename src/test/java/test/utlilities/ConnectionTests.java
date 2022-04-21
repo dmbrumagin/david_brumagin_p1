@@ -1,4 +1,4 @@
-package dev.drumagin.test.utlilities;
+package test.utlilities;
 
 import dev.brumagin.app.utilities.ConnectionUtility;
 import org.junit.jupiter.api.Assertions;

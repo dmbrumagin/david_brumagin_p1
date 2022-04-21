@@ -1,4 +1,4 @@
-package dev.drumagin.test.data;
+package test;
 
 import dev.brumagin.app.data.EmployeeDAO;
 import dev.brumagin.app.data.EmployeeDAOPostgresImpl;
