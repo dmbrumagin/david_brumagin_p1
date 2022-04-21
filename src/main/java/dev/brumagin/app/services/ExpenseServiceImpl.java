@@ -4,6 +4,7 @@ import dev.brumagin.app.data.ExpenseDAO;
 import dev.brumagin.app.data.ExpenseDAOPostgresImpl;
 import dev.brumagin.app.entities.Expense;
 import dev.brumagin.app.entities.ExpenseStatus;
+import dev.brumagin.app.entities.NegativeExpenseException;
 import dev.brumagin.app.utilities.LogLevel;
 import dev.brumagin.app.utilities.Logger;
 
@@ -19,7 +20,9 @@ public class ExpenseServiceImpl implements ExpenseService{
     }
 
     @Override
-    public boolean createExpense(Expense expense) {
+    public boolean createExpense(Expense expense) throws NegativeExpenseException {
+        if (expense.getCost()<0)
+            throw new NegativeExpenseException();
         return expenseDAO.createExpense(expense) !=null;
     }
 
@@ -43,8 +46,10 @@ public class ExpenseServiceImpl implements ExpenseService{
     }
 
     @Override
-    public boolean updateExpense(Expense expense,ExpenseStatus status) {
-        if(expenseDAO.getExpenseById(expense.getExpenseId()).getStatus().name()=="PENDING") {
+    public boolean updateExpense(Expense expense,ExpenseStatus status) throws NegativeExpenseException {
+        if(expense.getCost()<0)
+            throw new NegativeExpenseException();
+        if(expenseDAO.getExpenseById(expense.getExpenseId()).getStatus().name().equals("PENDING")) {
             expense.setStatus(status);
             return expenseDAO.updateExpense(expense);
         }
@@ -57,7 +62,7 @@ public class ExpenseServiceImpl implements ExpenseService{
     @Override
     public boolean deleteExpense(Expense expense) {
         System.out.println(expense);
-        if(expenseDAO.getExpenseById(expense.getExpenseId()).getStatus().name()=="PENDING")
+        if(expenseDAO.getExpenseById(expense.getExpenseId()).getStatus().name().equals("PENDING"))
             return expenseDAO.deleteExpense(expense);
         else{
             Logger.log("Failed to remove expense: \n"+ expense +"\n Status was not PENDING", LogLevel.INFO);

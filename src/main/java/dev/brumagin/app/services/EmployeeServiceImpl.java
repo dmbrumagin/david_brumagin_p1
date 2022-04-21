@@ -3,6 +3,7 @@ package dev.brumagin.app.services;
 import dev.brumagin.app.data.*;
 import dev.brumagin.app.entities.Employee;
 import dev.brumagin.app.entities.Expense;
+import dev.brumagin.app.entities.LedgerContainsEmployeeException;
 
 import java.util.List;
 
@@ -32,25 +33,25 @@ public class EmployeeServiceImpl implements EmployeeService{
     }
 
     @Override
-    public boolean updateEmployee(Employee employee) throws ExpenseLedgerContainsEmployee {
+    public boolean updateEmployee(Employee employee) throws LedgerContainsEmployeeException {
         if(canEdit(employee.getId())){
             return employeeDAO.updateEmployee(employee);}
         return false;
     }
 
     @Override
-    public boolean deleteEmployee(int employeeId) throws ExpenseLedgerContainsEmployee {
+    public boolean deleteEmployee(int employeeId) throws LedgerContainsEmployeeException {
         if(canEdit(employeeId))
             return employeeDAO.deleteEmployee(employeeId);
         return false;
     }
 
-    public boolean canEdit(int employeeId){
+    public boolean canEdit(int employeeId) throws LedgerContainsEmployeeException {
         List<Expense> expenses = expenseDAO.getAllExpenses();
         for(Expense e : expenses){
             System.out.println(e);
             if(e.getEmployeeId()==employeeId)
-                throw new ExpenseLedgerContainsEmployee();
+                throw new LedgerContainsEmployeeException();
         }
         return true;
     }

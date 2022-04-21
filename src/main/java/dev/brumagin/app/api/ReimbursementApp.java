@@ -1,10 +1,7 @@
 package dev.brumagin.app.api;
 
 import com.google.gson.Gson;
-import dev.brumagin.app.data.ExpenseLedgerContainsEmployee;
-import dev.brumagin.app.entities.Employee;
-import dev.brumagin.app.entities.Expense;
-import dev.brumagin.app.entities.ExpenseStatus;
+import dev.brumagin.app.entities.*;
 import dev.brumagin.app.services.EmployeeService;
 import dev.brumagin.app.services.EmployeeServiceImpl;
 import dev.brumagin.app.services.ExpenseService;
@@ -87,7 +84,7 @@ public class ReimbursementApp {
                     context.result("Did not find employee to update: " + id);
                 }
             }
-            catch (ExpenseLedgerContainsEmployee e){
+            catch (LedgerContainsEmployeeException e){
                 context.status(409);
                 context.result("Employee could not be deleted because they have recorded expenses: " + id);
             }
@@ -105,7 +102,7 @@ public class ReimbursementApp {
                     context.result("Did not find employee to delete: " + id);
                 }
             }
-            catch (ExpenseLedgerContainsEmployee e){
+            catch (LedgerContainsEmployeeException e){
                 context.status(409);
                 context.result("Employee could not be deleted because they have recorded expenses: " + id);
             }
@@ -115,12 +112,18 @@ public class ReimbursementApp {
             String body = context.body();
             Expense expense = gson.fromJson(body, Expense.class);
 
-            if (expenseService.createExpense(expense)) {
-                context.status(201);
-                context.result("Created a new expense for employee: " + expense.getEmployeeId() + ".");
-            } else {
+            try {
+                if (expenseService.createExpense(expense)) {
+                    context.status(201);
+                    context.result("Created a new expense for employee: " + expense.getEmployeeId() + ".");
+                } else {
+                    context.status(400);
+                    context.result("Did not create a new expense for employee: " + expense.getEmployeeId() + ".");
+                }
+            }
+            catch (NegativeExpenseException e){
                 context.status(400);
-                context.result("Did not create a new expense for employee: " + expense.getEmployeeId() + ".");
+                context.result("Expense was negative. Did not create a new expense: "+expense);
             }
         });
 
@@ -156,6 +159,11 @@ public class ReimbursementApp {
             String body = context.body();
             int id = Integer.parseInt(context.pathParam("id"));
             Expense expense = gson.fromJson(body, Expense.class);
+            if (expense.getCost() < 0) {
+                context.status(400);
+                context.result("Expense was negative. Did not create a new expense: " + expense);
+
+            }
             expense.setEmployeeId(id);
 
             if (expenseService.updateExpense(expense, ExpenseStatus.PENDING)) {
@@ -165,6 +173,7 @@ public class ReimbursementApp {
                 context.status(404);
                 context.result("Did not find an expense: " + expense + " for employee: " + id + ".");
             }
+
         });
 
         app.patch("/expenses/{id}/approve",context -> {
@@ -172,7 +181,7 @@ public class ReimbursementApp {
             int id = Integer.parseInt(context.pathParam("id"));
             Expense expense = gson.fromJson(body, Expense.class);
             expense.setEmployeeId(id);
-
+//TODO limit to id
             if (expenseService.updateExpense(expense, ExpenseStatus.APPROVED)) {
                 context.status(200);
                 context.result("Approved PENDING expense:" + expense + " for employee: " + id);
@@ -187,7 +196,7 @@ public class ReimbursementApp {
             int id = Integer.parseInt(context.pathParam("id"));
             Expense expense = gson.fromJson(body, Expense.class);
             expense.setEmployeeId(id);
-
+//TODO limit to id
             if (expenseService.updateExpense(expense, ExpenseStatus.DENIED)) {
                 context.status(200);
                 context.result("Denied PENDING expense:" + expense + " for employee: " + id);
