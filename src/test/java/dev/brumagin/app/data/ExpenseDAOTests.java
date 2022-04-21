@@ -24,7 +24,7 @@ public class ExpenseDAOTests {
         Expense expense = new Expense(0,"Ferrari",64333.34, ExpenseStatus.PENDING,employee.getId());
         expense = expenseDAO.createExpense(expense);
         Assertions.assertNotEquals(0,expense.getExpenseId());
-        expenseDAO.deleteExpense(expense);
+        expenseDAO.deleteExpense(expense.getExpenseId());
         employeeDAO.deleteEmployee(employee.getId());
     }
 
@@ -35,7 +35,7 @@ public class ExpenseDAOTests {
         Expense expense = new Expense(0,"pie",3.14, ExpenseStatus.PENDING,employee.getId());
         Expense compareExpense = expenseDAO.createExpense(expense);
         Assertions.assertEquals(compareExpense.getExpenseId(),expenseDAO.getExpenseById(expense.getExpenseId()).getExpenseId());
-        expenseDAO.deleteExpense(expense);
+        expenseDAO.deleteExpense(expense.getExpenseId());
         employeeDAO.deleteEmployee(employee.getId());
     }
 
@@ -47,7 +47,7 @@ public class ExpenseDAOTests {
         expenseDAO.createExpense(expense);
         List<Expense> expenses = expenseDAO.getAllExpenses();
         Assertions.assertNotEquals(0,expenses.size());
-        expenseDAO.deleteExpense(expense);
+        expenseDAO.deleteExpense(expense.getExpenseId());
         employeeDAO.deleteEmployee(employee.getId());
     }
 
@@ -60,7 +60,7 @@ public class ExpenseDAOTests {
         expense.setDescription("test");
         expenseDAO.updateExpense(expense);
         Assertions.assertEquals("test",expenseDAO.getExpenseById(expense.getExpenseId()).getDescription());
-        expenseDAO.deleteExpense(expense);
+        expenseDAO.deleteExpense(expense.getExpenseId());
         employeeDAO.deleteEmployee(employee.getId());
     }
 
@@ -71,7 +71,7 @@ public class ExpenseDAOTests {
         Expense expense = new Expense(0,"pie",3.14, ExpenseStatus.PENDING,employee.getId());
         expenseDAO.createExpense(expense);
         System.out.println(expense);
-        Assertions.assertTrue( expenseDAO.deleteExpense(expense));
+        Assertions.assertTrue( expenseDAO.deleteExpense(expense.getExpenseId()));
         employeeDAO.deleteEmployee(employee.getId());
     }
 

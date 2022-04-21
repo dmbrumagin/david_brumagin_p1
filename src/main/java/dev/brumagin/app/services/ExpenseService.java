@@ -1,5 +1,6 @@
 package dev.brumagin.app.services;
 
+import dev.brumagin.app.entities.CannotEditException;
 import dev.brumagin.app.entities.Expense;
 import dev.brumagin.app.entities.ExpenseStatus;
 
@@ -12,6 +13,6 @@ public interface ExpenseService {
     List<Expense> getAllExpenses();
     List<Expense> getAllExpenses(ExpenseStatus status);
     List<Expense> getAllExpenses(int employeeId);
-    boolean updateExpense(Expense expense,ExpenseStatus status);
-    boolean deleteExpense(Expense expense);
+    boolean updateExpense(Expense expense,ExpenseStatus status) throws CannotEditException;
+    boolean deleteExpense(int expenseId) throws CannotEditException;
 }

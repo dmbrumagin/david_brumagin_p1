@@ -105,17 +105,17 @@ public class ExpenseDAOPostgresImpl implements ExpenseDAO{
     }
 
     @Override
-    public boolean deleteExpense(Expense expense) {
+    public boolean deleteExpense(int expenseId) {
         try{
             Connection connection = ConnectionUtility.createConnection();
             String statement = "delete from expense where expense_id = ?;";
             PreparedStatement ps = connection.prepareStatement(statement);
-            ps.setInt(1,expense.getExpenseId());
+            ps.setInt(1,expenseId);
             ps.execute();
             return true;
         }
         catch (SQLException e){
-            Logger.log("Expense was not deleted; please check database access and that your expense currently exists.**\n"+expense, LogLevel.WARNING);
+            Logger.log("Expense was not deleted; please check database access and that your expense currently exists.**\n"+expenseId, LogLevel.WARNING);
             return false;
         }
     }

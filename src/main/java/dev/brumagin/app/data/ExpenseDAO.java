@@ -9,5 +9,5 @@ public interface ExpenseDAO {
     Expense getExpenseById(int expenseId);
     List<Expense> getAllExpenses();
     boolean updateExpense(Expense expense);
-    boolean deleteExpense(Expense expense);
+    boolean deleteExpense(int expenseId);
 }

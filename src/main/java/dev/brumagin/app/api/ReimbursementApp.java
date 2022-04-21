@@ -14,9 +14,9 @@ import java.util.List;
 
 public class ReimbursementApp {
 
-    static EmployeeService employeeService = new EmployeeServiceImpl();
-    static ExpenseService expenseService = new ExpenseServiceImpl();
-    static Gson gson = new Gson();
+    static final EmployeeService employeeService = new EmployeeServiceImpl();
+    static final ExpenseService expenseService = new ExpenseServiceImpl();
+    static final Gson gson = new Gson();
 
     public static void main (String[] args){
 
@@ -84,7 +84,7 @@ public class ReimbursementApp {
                     context.result("Did not find employee to update: " + id);
                 }
             }
-            catch (LedgerContainsEmployeeException e){
+            catch (CannotEditException e){
                 context.status(409);
                 context.result("Employee could not be changed because they have recorded expenses: " + id);
             }
@@ -102,7 +102,7 @@ public class ReimbursementApp {
                     context.result("Did not find employee to delete: " + id);
                 }
             }
-            catch (LedgerContainsEmployeeException e){
+            catch (CannotEditException e){
                 context.status(409);
                 context.result("Employee could not be deleted because they have recorded expenses: " + id);
             }
@@ -157,16 +157,21 @@ public class ReimbursementApp {
             int id = Integer.parseInt(context.pathParam("id"));
             Expense expense = gson.fromJson(body, Expense.class);
             expense.setExpenseId(id);
-            if (expense.getCost() < 0) {
-                context.status(400);
-                context.result("Expense was negative. Did not create a new expense: " + expense);
+            try {
+                if (expense.getCost() < 0) {
+                    context.status(400);
+                    context.result("Expense was negative. Did not create a new expense: " + expense);
+                } else if (expenseService.updateExpense(expense, ExpenseStatus.PENDING)) {
+                    context.status(200);
+                    context.result("Updated expense: " + expense);
+                } else {
+                    context.status(404);
+                    context.result("Did not find expense: " + id);
+                }
             }
-            else if (expenseService.updateExpense(expense, ExpenseStatus.PENDING)) {
-                context.status(200);
-                context.result("Updated expense: " + expense);
-            } else {
-                context.status(404);
-                context.result("Did not find expense: " + id);
+            catch (CannotEditException e){
+                context.status(409);
+                context.result("Failed to update expense: \n"+ expense.getExpenseId() +"\nStatus was not PENDING");
             }
 
         });
@@ -176,12 +181,18 @@ public class ReimbursementApp {
             int id = Integer.parseInt(context.pathParam("id"));
             Expense expense = gson.fromJson(body, Expense.class);
             expense.setExpenseId(id);
-            if (expenseService.updateExpense(expense, ExpenseStatus.APPROVED)) {
-                context.status(200);
-                context.result("Approved PENDING expense:" + expense);
-            } else {
-                context.status(404);
-                context.result("Did not find the PENDING expense: " + expense);
+            try {
+                if (expenseService.updateExpense(expense, ExpenseStatus.APPROVED)) {
+                    context.status(200);
+                    context.result("Approved PENDING expense:" + expense);
+                } else {
+                    context.status(404);
+                    context.result("Did not find the expense: " + expense);
+                }
+            }
+            catch (CannotEditException e){
+                context.status(409);
+                context.result("Failed to update expense: \n"+ expense.getExpenseId() +"\nStatus was not PENDING");
             }
         });
 
@@ -190,12 +201,18 @@ public class ReimbursementApp {
             int id = Integer.parseInt(context.pathParam("id"));
             Expense expense = gson.fromJson(body, Expense.class);
             expense.setExpenseId(id);
-            if (expenseService.updateExpense(expense, ExpenseStatus.DENIED)) {
-                context.status(200);
-                context.result("Denied PENDING expense:" + expense);
-            } else {
-                context.status(404);
-                context.result("Did not find the PENDING expense:" + expense);
+            try {
+                if (expenseService.updateExpense(expense, ExpenseStatus.DENIED)) {
+                    context.status(200);
+                    context.result("Denied PENDING expense:" + expense);
+                } else {
+                    context.status(404);
+                    context.result("Did not find the expense:" + expense);
+                }
+            }
+            catch (CannotEditException e){
+                context.status(409);
+                context.result("Failed to update expense: "+ expense.getExpenseId() +"\nStatus was not PENDING");
             }
         });
 
@@ -204,13 +221,18 @@ public class ReimbursementApp {
             Expense expense = gson.fromJson(body, Expense.class);
             int id = Integer.parseInt(context.pathParam("id"));
             expense.setExpenseId(id);
-
-            if (expenseService.deleteExpense(expense)) {
-                context.status(200);
-                context.result("Expense deleted: " + expense);
-            } else {
-                context.status(404);
-                context.result("Did not find PENDING expense: " + expense);
+            try {
+                if (expenseService.deleteExpense(id)) {
+                    context.status(200);
+                    context.result("Expense deleted: " + expense);
+                } else {
+                    context.status(404);
+                    context.result("Did not find expense: " + expense);
+                }
+            }
+            catch (CannotEditException e){
+                context.status(409);
+                context.result("Failed to remove expense: \n"+ expense +"\nStatus was not PENDING");
             }
         });
 
@@ -235,12 +257,12 @@ public class ReimbursementApp {
             int id = Integer.parseInt(context.pathParam("id"));
             List<Expense> expenses = expenseService.getAllExpenses(id);
 
-            if (expenses.isEmpty()) {
+            if (!expenses.isEmpty()) {
                 context.status(200);
                 context.result(gson.toJson(expenses));
             } else {
                 context.status(404);
-                context.result("Did not find an expense for employee: " + id);
+                context.result("Did not find expenses for employee: " + id);
             }
         });
 

@@ -2,6 +2,7 @@ package dev.brumagin.app.services;
 
 import dev.brumagin.app.data.ExpenseDAO;
 import dev.brumagin.app.data.ExpenseDAOPostgresImpl;
+import dev.brumagin.app.entities.CannotEditException;
 import dev.brumagin.app.entities.Expense;
 import dev.brumagin.app.entities.ExpenseStatus;
 import dev.brumagin.app.utilities.LogLevel;
@@ -46,10 +47,15 @@ public class ExpenseServiceImpl implements ExpenseService{
     }
 
     @Override
-    public boolean updateExpense(Expense expense,ExpenseStatus status){
-        if(expenseDAO.getExpenseById(expense.getExpenseId()).getStatus().name().equals("PENDING")) {
-            expense.setStatus(status);
-            return expenseDAO.updateExpense(expense);
+    public boolean updateExpense(Expense expense,ExpenseStatus status) throws CannotEditException {
+        if(expenseDAO.getExpenseById(expense.getExpenseId()) != null){
+            if(expenseDAO.getExpenseById(expense.getExpenseId()).getStatus().name().equals("PENDING")) {
+                expense.setStatus(status);
+                return expenseDAO.updateExpense(expense);
+            }
+            else {
+                throw new CannotEditException();
+            }
         }
         else {
             Logger.log("Failed to update expense: \n"+ expense +"\n Status was not PENDING", LogLevel.INFO);
@@ -58,11 +64,16 @@ public class ExpenseServiceImpl implements ExpenseService{
     }
 
     @Override
-    public boolean deleteExpense(Expense expense) {
-        if(expenseDAO.getExpenseById(expense.getExpenseId()).getStatus().name().equals("PENDING"))
-            return expenseDAO.deleteExpense(expense);
+    public boolean deleteExpense(int expenseId) throws CannotEditException {
+        if(expenseDAO.getExpenseById(expenseId) != null){
+            if(!expenseDAO.getExpenseById(expenseId).getStatus().name().equals("PENDING"))
+                return expenseDAO.deleteExpense(expenseId);
+            else {
+                throw new CannotEditException();
+            }
+        }
         else{
-            Logger.log("Failed to remove expense: \n"+ expense +"\n Status was not PENDING", LogLevel.INFO);
+            Logger.log("Failed to remove expense: \n"+ expenseId +"\n Status was not PENDING", LogLevel.INFO);
             return false;
         }
     }
