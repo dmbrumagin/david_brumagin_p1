@@ -117,10 +117,10 @@ public class ReimbursementApp {
             }
             else if (expenseService.createExpense(expense)) {
                 context.status(201);
-                context.result("Created a new expense for employee: " + expense.getEmployeeId() + ".");
+                context.result("Created a new expense: "+expense);
             } else {
                 context.status(400);
-                context.result("Did not create a new expense for employee: " + expense.getEmployeeId() + ".");
+                context.result("Did not create a new expense: "+expense);
             }
         });
 
@@ -148,7 +148,7 @@ public class ReimbursementApp {
                 context.result(gson.toJson(expense));
             } else {
                 context.status(404);
-                context.result("Did not find an expense for employee: " + id + ".");
+                context.result("Did not find an expense: " + id + ".");
             }
         });
 
@@ -195,7 +195,7 @@ public class ReimbursementApp {
                 context.result("Denied PENDING expense:" + expense);
             } else {
                 context.status(404);
-                context.result("Did not find the PENDING expense for employee:" + expense);
+                context.result("Did not find the PENDING expense:" + expense);
             }
         });
 
@@ -219,19 +219,15 @@ public class ReimbursementApp {
             int id = Integer.parseInt(context.pathParam("id"));
             Expense expense = gson.fromJson(body, Expense.class);
             expense.setEmployeeId(id);
-
-            try {
-                if (expenseService.createExpense(expense)) {
-                    context.status(201);
-                    context.result("Created a new expense for employee: " + expense.getEmployeeId());
-                } else {
-                    context.status(400);
-                    context.result("Did not create a new expense for employee: " + expense.getEmployeeId());
-                }
-            }
-            catch (NegativeExpenseException e){
+            if (expense.getCost() < 0) {
                 context.status(400);
-                context.result("Expense was negative. Did not create a new expense: "+expense);
+                context.result("Expense was negative. Did not create a new expense: " + expense);
+            } else if (expenseService.createExpense(expense)) {
+                context.status(201);
+                context.result("Created a new expense for employee: " + expense.getEmployeeId());
+            } else {
+                context.status(400);
+                context.result("Did not create a new expense for employee: " + expense.getEmployeeId());
             }
         });
 

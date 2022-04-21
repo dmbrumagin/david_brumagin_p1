@@ -4,7 +4,6 @@ import dev.brumagin.app.data.ExpenseDAO;
 import dev.brumagin.app.data.ExpenseDAOPostgresImpl;
 import dev.brumagin.app.entities.Expense;
 import dev.brumagin.app.entities.ExpenseStatus;
-import dev.brumagin.app.entities.NegativeExpenseException;
 import dev.brumagin.app.utilities.LogLevel;
 import dev.brumagin.app.utilities.Logger;
 import java.util.List;
@@ -18,9 +17,7 @@ public class ExpenseServiceImpl implements ExpenseService{
     }
 
     @Override
-    public boolean createExpense(Expense expense) throws NegativeExpenseException {
-        if (expense.getCost()<0)
-            throw new NegativeExpenseException();
+    public boolean createExpense(Expense expense){
         return expenseDAO.createExpense(expense) !=null;
     }
 
@@ -49,9 +46,7 @@ public class ExpenseServiceImpl implements ExpenseService{
     }
 
     @Override
-    public boolean updateExpense(Expense expense,ExpenseStatus status) throws NegativeExpenseException {
-        if(expense.getCost()<0)
-            throw new NegativeExpenseException();
+    public boolean updateExpense(Expense expense,ExpenseStatus status){
         if(expenseDAO.getExpenseById(expense.getExpenseId()).getStatus().name().equals("PENDING")) {
             expense.setStatus(status);
             return expenseDAO.updateExpense(expense);
