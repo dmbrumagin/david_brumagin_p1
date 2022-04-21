@@ -239,7 +239,7 @@ public class ReimbursementApp {
             int id = Integer.parseInt(context.pathParam("id"));
             List<Expense> expenses = expenseService.getAllExpenses(id);
 
-            if (expenses.size() != 0) {
+            if (expenses.isEmpty()) {
                 context.status(200);
                 context.result(gson.toJson(expenses));
             } else {

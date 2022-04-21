@@ -1,12 +1,13 @@
 package dev.brumagin.app.utilities;
 
-import lombok.NoArgsConstructor;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-@NoArgsConstructor
 public class ConnectionUtility {
-    
+
+    private ConnectionUtility(){
+
+    }
     public static java.sql.Connection createConnection() {
         java.sql.Connection connection = null;
         try {

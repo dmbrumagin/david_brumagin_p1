@@ -42,9 +42,8 @@ public class ExpenseDAOPostgresImpl implements ExpenseDAO{
             PreparedStatement ps = connection.prepareStatement(statement);
             ps.setInt(1, expenseId);
             ResultSet rs = ps.executeQuery();
-            Expense expense;
             rs.next();
-            expense = new Expense();
+            Expense expense = new Expense();
             expense.setExpenseId(expenseId);
             expense.setStatus(ExpenseStatus.valueOf(rs.getString("status")));
             expense.setCost(rs.getDouble("cost"));
@@ -88,7 +87,6 @@ public class ExpenseDAOPostgresImpl implements ExpenseDAO{
     @Override
     public boolean updateExpense(Expense expense) {
         try {
-            System.out.println(expense);
             Connection connection = ConnectionUtility.createConnection();
             String statement = "update expense set description = ?, cost = ?, status = ?, employee_id = ? where expense_id = ?;";
             PreparedStatement ps = connection.prepareStatement(statement);

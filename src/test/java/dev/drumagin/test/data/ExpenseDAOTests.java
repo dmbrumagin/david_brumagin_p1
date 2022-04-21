@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-public class ExpenseDAOTests {
+class ExpenseDAOTests {
 
     static EmployeeDAO employeeDAO = new EmployeeDAOPostgresImpl();
     static ExpenseDAO expenseDAO  = new ExpenseDAOPostgresImpl();
@@ -46,7 +46,7 @@ public class ExpenseDAOTests {
         Expense expense = new Expense(0,"pie",3.14, ExpenseStatus.PENDING,employee.getId());
         expenseDAO.createExpense(expense);
         List<Expense> expenses = expenseDAO.getAllExpenses();
-        Assertions.assertNotEquals(expenses.size(),0);
+        Assertions.assertNotEquals(0,expenses.size());
         expenseDAO.deleteExpense(expense);
         employeeDAO.deleteEmployee(employee.getId());
     }

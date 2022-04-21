@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import java.util.List;
 
-public class EmployeeDAOTests {
+class EmployeeDAOTests {
 
     static EmployeeDAO employeeDAO = new EmployeeDAOPostgresImpl();
     @Test
@@ -38,7 +38,7 @@ public class EmployeeDAOTests {
         employeeDAO.createEmployee(employee3);
         List<Employee> employees = employeeDAO.getAllEmployees();
 
-        Assertions.assertNotEquals(employees.size(),0);
+        Assertions.assertNotEquals(0,employees.size());
         employeeDAO.deleteEmployee(employee.getId());
         employeeDAO.deleteEmployee(employee2.getId());
         employeeDAO.deleteEmployee(employee3.getId());

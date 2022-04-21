@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 
-public class ConnectionTests {
+class ConnectionTests {
 
     @Test
 
