@@ -30,7 +30,8 @@ public class Logger {
             Files.write(Paths.get(path),
                     logMessage.getBytes(StandardCharsets.UTF_8),
                     StandardOpenOption.APPEND);
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             e.printStackTrace();
         }
 
