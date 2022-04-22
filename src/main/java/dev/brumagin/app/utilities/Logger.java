@@ -1,6 +1,5 @@
 package dev.brumagin.app.utilities;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -28,9 +27,6 @@ public class Logger {
         String path = "C:\\Users\\dbrum\\IdeaProjects\\Project1\\src\\main\\java\\dev\\brumagin\\app\\expenses.log";
 
         try {
-            File file = new File(path);
-            file.createNewFile(); // attempt to create the file if not found
-
             Files.write(Paths.get(path),
                     logMessage.getBytes(StandardCharsets.UTF_8),
                     StandardOpenOption.APPEND);
