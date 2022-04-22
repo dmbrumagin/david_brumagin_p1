@@ -32,7 +32,7 @@ public class Logger {
                     StandardOpenOption.APPEND);
         }
         catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
 
     }
