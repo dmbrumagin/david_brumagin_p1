@@ -64,6 +64,7 @@ public class ReimbursementApp {
         app.start(5000); //Start configured application
     }
 
+
     public static void databaseConnectionRoute() {
         app.get("/", context -> {
             Connection connection = ConnectionUtility.createConnection();
