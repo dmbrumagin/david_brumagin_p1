@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Expense {
 
-    private int expenseId;
+    private int expenseId;//PK
     private String description;
     private double cost;
     private ExpenseStatus status;
-    private int employeeId;
+    private int employeeId;//FK
 }

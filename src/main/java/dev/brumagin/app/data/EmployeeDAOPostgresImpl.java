@@ -8,8 +8,16 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A class that acts as the Data Access Object Implementation for Employee Entities
+ */
 public class EmployeeDAOPostgresImpl implements EmployeeDAO{
 
+    /**
+     * A method to create employees in the database
+     * @param employee the contents of the employee object to add the database
+     * @return the added employee with ID
+     */
     @Override
     public Employee createEmployee(Employee employee){
         try {
@@ -32,6 +40,11 @@ public class EmployeeDAOPostgresImpl implements EmployeeDAO{
         }
     }
 
+    /**
+     * A method to get an employee from the database by its ID(PK)
+     * @param employeeId the primary key in the database of the employee record
+     * @return the returned employee record
+     */
     @Override
     public Employee getEmployeeById(int employeeId) {
         try {
@@ -53,6 +66,10 @@ public class EmployeeDAOPostgresImpl implements EmployeeDAO{
         }
     }
 
+    /**
+     * A method to get all employee records from the database
+     * @return a List of all employee records in the database
+     */
     @Override
     public List<Employee> getAllEmployees() {
         List<Employee> employees = new ArrayList<>();
@@ -77,6 +94,11 @@ public class EmployeeDAOPostgresImpl implements EmployeeDAO{
         }
     }
 
+    /**
+     * A method to update Employee records in the database
+     * @param employee the contents of the record's updates
+     * @return if the employee was updated in the database
+     */
     @Override
     public boolean updateEmployee(Employee employee) {
         try {
@@ -94,6 +116,11 @@ public class EmployeeDAOPostgresImpl implements EmployeeDAO{
         }
     }
 
+    /**
+     * A method to delete employees from the database
+     * @param employeeId the primary key ID of the employee to delete
+     * @return if the employee was deleted from the database
+     */
     @Override
     public boolean deleteEmployee(int employeeId) {
         try {

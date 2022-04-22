@@ -2,7 +2,6 @@ package dev.brumagin.app.services;
 
 import dev.brumagin.app.entities.CannotEditException;
 import dev.brumagin.app.entities.Employee;
-
 import java.util.List;
 
 public interface EmployeeService {

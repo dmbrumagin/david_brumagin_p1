@@ -3,7 +3,6 @@ package dev.brumagin.app.services;
 import dev.brumagin.app.entities.CannotEditException;
 import dev.brumagin.app.entities.Expense;
 import dev.brumagin.app.entities.ExpenseStatus;
-
 import java.util.List;
 
 public interface ExpenseService {

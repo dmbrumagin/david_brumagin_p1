@@ -9,8 +9,16 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A class that acts as the Data Access Object Implementation for Expenses Entities
+ */
 public class ExpenseDAOPostgresImpl implements ExpenseDAO{
 
+    /**
+     * A method to create expenses in the database
+     * @param expense the expense to add to the database
+     * @return the expense that was added to the database with an ID
+     */
     @Override
     public Expense createExpense(Expense expense) {
         try {
@@ -34,6 +42,11 @@ public class ExpenseDAOPostgresImpl implements ExpenseDAO{
         }
     }
 
+    /**
+     * A method to get an expense from the database by its ID
+     * @param expenseId the ID(PK) of the expense to retrieve from the database
+     * @return the retrieved expense from the database
+     */
     @Override
     public Expense getExpenseById(int expenseId) {
         try {
@@ -58,6 +71,10 @@ public class ExpenseDAOPostgresImpl implements ExpenseDAO{
         }
     }
 
+    /**
+     * A method to get all expense entries in the database
+     * @return a list of all expenses from the database
+     */
     @Override
     public List<Expense> getAllExpenses() {
         List<Expense> expenses = new ArrayList<>();
@@ -84,6 +101,11 @@ public class ExpenseDAOPostgresImpl implements ExpenseDAO{
         }
     }
 
+    /**
+     * A method to update expenses in the database
+     * @param expense the contents of the expense to add to the database
+     * @return whether the expense was updated in the database
+     */
     @Override
     public boolean updateExpense(Expense expense) {
         try {
@@ -104,6 +126,11 @@ public class ExpenseDAOPostgresImpl implements ExpenseDAO{
         }
     }
 
+    /**
+     * A method to delete expenses in the database
+     * @param expenseId the ID(PK) of the expense to delete in the database
+     * @return if the expense was deleted in the database
+     */
     @Override
     public boolean deleteExpense(int expenseId) {
         try{

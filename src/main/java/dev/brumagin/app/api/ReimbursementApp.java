@@ -12,28 +12,72 @@ import java.sql.Connection;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * An application that keeps track of employee expenses and reimbursements
+ */
 public class ReimbursementApp {
 
-    static final EmployeeService employeeService = new EmployeeServiceImpl();
-    static final ExpenseService expenseService = new ExpenseServiceImpl();
-    static final Gson gson = new Gson();
+    static final EmployeeService employeeService = new EmployeeServiceImpl(); // API -> DAO
+    static final ExpenseService expenseService = new ExpenseServiceImpl(); // API -> DAO
+    static final Gson gson = new Gson(); //JSON formatter
+    static Javalin app = Javalin.create(); //Create web application
 
-    public static void main (String[] args){
+    public static void main(String[] args) {
 
-        Javalin app = Javalin.create();
+        databaseConnectionRoute();
 
+        //-----------------------Employee Routes-------------------------//
+
+        createEmployeeRoute(); // "/"
+
+        getAllEmployeesRoute(); // "/employees"
+
+        getEmployeeByIdRoute(); // "/employees"
+
+        updateEmployeeByIdRoute(); // "/employees/{id}"
+
+        deleteEmployeeByIdRoute(); // "/employees/{id}"
+
+        //-----------------------Expense Routes-------------------------//
+
+        createExpenseRoute(); // "/expenses"
+
+        getAllExpensesRoute(); // "/expenses"
+
+        getExpenseByIdRoute(); // "/expenses/{id}"
+
+        updateExpenseByIdRoute(); // "/expenses/{id}"
+
+        updateExpenseStatusRoute("approve"); // "/expenses/{id}/approve"
+
+        updateExpenseStatusRoute("deny"); // "/expenses/{id}/deny"
+
+        deleteExpenseByIdRoute(); // "/expenses/{id}"
+
+        //-----------------------Compound Routes-------------------------//
+
+        createExpenseByEmployeeIdRoute(); // "/employees/{id}/expenses"
+
+        getExpensesByEmployeeIdRoute(); // "/employees/{id}/expenses"
+
+
+        app.start(5000); //Start configured application
+    }
+
+    public static void databaseConnectionRoute() {
         app.get("/", context -> {
             Connection connection = ConnectionUtility.createConnection();
-            if(connection != null){
+            if (connection != null) {
                 context.status(200);
                 context.result("Application connects to database.");
-            }
-            else {
+            } else {
                 context.status(400);
                 context.result("Application cannot connect to database.");
             }
         });
+    }
 
+    public static void createEmployeeRoute() {
         app.post("/employees", context -> {
             String body = context.body();
             Employee employee = gson.fromJson(body, Employee.class);
@@ -46,12 +90,16 @@ public class ReimbursementApp {
                 context.result("Did not create a new employee: " + employee);
             }
         });
+    }
 
+    public static void getAllEmployeesRoute() {
         app.get("/employees", context -> {
             String json = gson.toJson(employeeService.getAllEmployees());
             context.result(json);
         });
+    }
 
+    public static void getEmployeeByIdRoute(){
         app.get("/employees/{id}", context -> {
             int id = Integer.parseInt(context.pathParam("id"));
             Employee employee = employeeService.getEmployeeById(id);
@@ -67,8 +115,10 @@ public class ReimbursementApp {
             }
 
         });
+    }
 
-        app.put("/employees/{id}",context -> {
+    public static void updateEmployeeByIdRoute(){
+        app.put("/employees/{id}", context -> {
             String body = context.body();
             Employee employee = gson.fromJson(body, Employee.class);
             int id = Integer.parseInt(context.pathParam("id"));
@@ -83,14 +133,15 @@ public class ReimbursementApp {
                     context.status(404);
                     context.result("Did not find employee to update: " + id);
                 }
-            }
-            catch (CannotEditException e){
+            } catch (CannotEditException e) {
                 context.status(409);
                 context.result("Employee could not be changed because they have recorded expenses: " + id);
             }
         });
+    }
 
-        app.delete("/employees/{id}",context -> {
+    public static void deleteEmployeeByIdRoute(){
+        app.delete("/employees/{id}", context -> {
             int id = Integer.parseInt(context.pathParam("id"));
 
             try {
@@ -101,30 +152,32 @@ public class ReimbursementApp {
                     context.status(404);
                     context.result("Did not find employee to delete: " + id);
                 }
-            }
-            catch (CannotEditException e){
+            } catch (CannotEditException e) {
                 context.status(409);
                 context.result("Employee could not be deleted because they have recorded expenses: " + id);
             }
         });
+    }
 
+    public static void createExpenseRoute(){
         app.post("/expenses", context -> {
             String body = context.body();
             Expense expense = gson.fromJson(body, Expense.class);
             if (expense.getCost() < 0) {
                 context.status(400);
                 context.result("Expense was negative. Did not create a new expense: " + expense);
-            }
-            else if (expenseService.createExpense(expense)) {
+            } else if (expenseService.createExpense(expense)) {
                 context.status(201);
-                context.result("Created a new expense: "+expense);
+                context.result("Created a new expense: " + expense);
             } else {
                 context.status(400);
-                context.result("Did not create a new expense: "+expense);
+                context.result("Did not create a new expense: " + expense);
             }
         });
+    }
 
-        app.get("/expenses",context -> {
+    public static void getAllExpensesRoute(){
+        app.get("/expenses", context -> {
             String json;
             List<Expense> expenses;
             String queryParam = context.queryParam("status");
@@ -138,7 +191,9 @@ public class ReimbursementApp {
             json = gson.toJson(expenses);
             context.result(json);
         });
+    }
 
+    public static void getExpenseByIdRoute(){
         app.get("/expenses/{id}", context -> {
             int id = Integer.parseInt(context.pathParam("id"));
             Expense expense = expenseService.getExpenseById(id);
@@ -151,8 +206,10 @@ public class ReimbursementApp {
                 context.result("Did not find an expense: " + id + ".");
             }
         });
+    }
 
-        app.put("/expenses/{id}",context -> {
+    public static void updateExpenseByIdRoute(){
+        app.put("/expenses/{id}", context -> {
             String body = context.body();
             int id = Integer.parseInt(context.pathParam("id"));
             Expense expense = gson.fromJson(body, Expense.class);
@@ -168,55 +225,38 @@ public class ReimbursementApp {
                     context.status(404);
                     context.result("Did not find expense: " + id);
                 }
-            }
-            catch (CannotEditException e){
+            } catch (CannotEditException e) {
                 context.status(409);
-                context.result("Failed to update expense: \n"+ expense.getExpenseId() +"\nStatus was not PENDING");
+                context.result("Failed to update expense: \n" + expense.getExpenseId() + "\nStatus was not PENDING");
             }
-
         });
+    }
 
-        app.patch("/expenses/{id}/approve",context -> {
+    public static void updateExpenseStatusRoute(String pathParam){
+        app.patch("/expenses/{id}/"+pathParam, context -> {
             String body = context.body();
             int id = Integer.parseInt(context.pathParam("id"));
             Expense expense = gson.fromJson(body, Expense.class);
             expense.setExpenseId(id);
             try {
-                if (expenseService.updateExpense(expense, ExpenseStatus.APPROVED)) {
+                ExpenseStatus status = pathParam.equals("approve") ? ExpenseStatus.APPROVED : ExpenseStatus.DENIED;
+                if (expenseService.updateExpense(expense, status)) {
                     context.status(200);
-                    context.result("Approved PENDING expense:" + expense);
+                    String result =  pathParam.equals("approve") ? "Approved" : "Denied";
+                    context.result( result +" PENDING expense:" + expense);
                 } else {
                     context.status(404);
                     context.result("Did not find the expense: " + expense);
                 }
-            }
-            catch (CannotEditException e){
+            } catch (CannotEditException e) {
                 context.status(409);
-                context.result("Failed to update expense: \n"+ expense.getExpenseId() +"\nStatus was not PENDING");
+                context.result("Failed to update expense: \n" + expense.getExpenseId() + "\nStatus was not PENDING");
             }
         });
+    }
 
-        app.patch("/expenses/{id}/deny",context -> {
-            String body = context.body();
-            int id = Integer.parseInt(context.pathParam("id"));
-            Expense expense = gson.fromJson(body, Expense.class);
-            expense.setExpenseId(id);
-            try {
-                if (expenseService.updateExpense(expense, ExpenseStatus.DENIED)) {
-                    context.status(200);
-                    context.result("Denied PENDING expense:" + expense);
-                } else {
-                    context.status(404);
-                    context.result("Did not find the expense:" + expense);
-                }
-            }
-            catch (CannotEditException e){
-                context.status(409);
-                context.result("Failed to update expense: "+ expense.getExpenseId() +"\nStatus was not PENDING");
-            }
-        });
-
-        app.delete("/expenses/{id}",context -> {
+    public static void deleteExpenseByIdRoute(){
+        app.delete("/expenses/{id}", context -> {
             String body = context.body();
             Expense expense = gson.fromJson(body, Expense.class);
             int id = Integer.parseInt(context.pathParam("id"));
@@ -229,13 +269,14 @@ public class ReimbursementApp {
                     context.status(404);
                     context.result("Did not find expense: " + expense);
                 }
-            }
-            catch (CannotEditException e){
+            } catch (CannotEditException e) {
                 context.status(409);
-                context.result("Failed to remove expense: \n"+ expense +"\nStatus was not PENDING");
+                context.result("Failed to remove expense: \n" + expense + "\nStatus was not PENDING");
             }
         });
+    }
 
+    public static void createExpenseByEmployeeIdRoute(){
         app.post("/employees/{id}/expenses", context -> {
             String body = context.body();
             int id = Integer.parseInt(context.pathParam("id"));
@@ -252,7 +293,9 @@ public class ReimbursementApp {
                 context.result("Did not create a new expense for employee: " + expense.getEmployeeId());
             }
         });
+    }
 
+    public static void getExpensesByEmployeeIdRoute(){
         app.get("/employees/{id}/expenses", context -> {
             int id = Integer.parseInt(context.pathParam("id"));
             List<Expense> expenses = expenseService.getAllExpenses(id);
@@ -265,7 +308,5 @@ public class ReimbursementApp {
                 context.result("Did not find expenses for employee: " + id);
             }
         });
-
-        app.start(5000);
     }
 }
