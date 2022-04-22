@@ -82,7 +82,7 @@ public class ReimbursementApp {
             String body = context.body();
             Employee employee = gson.fromJson(body, Employee.class);
 
-            if (employeeService.createEmployee(employee)) {
+            if (employeeService.createEmployee(employee)!=null) {
                 context.status(201);
                 context.result("Created a new employee: " + employee);
             } else {
@@ -166,7 +166,7 @@ public class ReimbursementApp {
             if (expense.getCost() < 0) {
                 context.status(400);
                 context.result("Expense was negative. Did not create a new expense: " + expense);
-            } else if (expenseService.createExpense(expense)) {
+            } else if (expenseService.createExpense(expense)!=null) {
                 context.status(201);
                 context.result("Created a new expense: " + expense);
             } else {
@@ -285,7 +285,7 @@ public class ReimbursementApp {
             if (expense.getCost() < 0) {
                 context.status(400);
                 context.result("Expense was negative. Did not create a new expense: " + expense);
-            } else if (expenseService.createExpense(expense)) {
+            } else if (expenseService.createExpense(expense)!= null) {
                 context.status(201);
                 context.result("Created a new expense for employee: " + expense.getEmployeeId());
             } else {

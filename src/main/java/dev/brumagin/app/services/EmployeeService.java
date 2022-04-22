@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface EmployeeService {
 
-    boolean createEmployee(Employee employee);
+    Employee createEmployee(Employee employee);
     Employee getEmployeeById(int id);
     List<Employee> getAllEmployees();
     boolean updateEmployee(Employee employee) throws CannotEditException;

@@ -25,8 +25,8 @@ public class EmployeeServiceImpl implements EmployeeService{
      * @return if the employee was successfully created
      */
     @Override
-    public boolean createEmployee(Employee employee) {
-        return employeeDAO.createEmployee(employee) != null;
+    public Employee createEmployee(Employee employee) {
+        return employeeDAO.createEmployee(employee);
     }
 
     /**

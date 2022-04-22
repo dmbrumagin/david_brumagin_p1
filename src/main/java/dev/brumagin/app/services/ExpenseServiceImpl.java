@@ -27,8 +27,8 @@ public class ExpenseServiceImpl implements ExpenseService{
      * @return if the expense was successfully created
      */
     @Override
-    public boolean createExpense(Expense expense){
-        return expenseDAO.createExpense(expense) !=null;
+    public Expense createExpense(Expense expense){
+        return expenseDAO.createExpense(expense);
     }
 
     /**
