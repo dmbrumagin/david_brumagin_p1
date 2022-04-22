@@ -1,11 +1,13 @@
-package dev.brumagin.app.data;
+package dev.brumagin.test.data;
 
+import dev.brumagin.app.data.EmployeeDAO;
+import dev.brumagin.app.data.EmployeeDAOPostgresImpl;
 import dev.brumagin.app.entities.Employee;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import java.util.List;
 
-class EmployeeDAOTests {
+class EmployeeDAOTest {
 
     static EmployeeDAO employeeDAO = new EmployeeDAOPostgresImpl();
     @Test

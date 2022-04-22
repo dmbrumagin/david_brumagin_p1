@@ -1,11 +1,11 @@
-package dev.brumagin.app.utlilities;
+package dev.brumagin.test.utilities;
 
 import dev.brumagin.app.utilities.ConnectionUtility;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import java.sql.Connection;
 
-class ConnectionTests {
+class ConnectionTest {
 
     @Test
     void create_connection(){

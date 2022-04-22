@@ -1,4 +1,4 @@
-package dev.brumagin.app.services;
+package dev.brumagin.test.services;
 
 import dev.brumagin.app.data.EmployeeDAO;
 import dev.brumagin.app.data.EmployeeDAOPostgresImpl;

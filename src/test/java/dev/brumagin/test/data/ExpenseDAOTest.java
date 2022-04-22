@@ -1,5 +1,9 @@
-package dev.brumagin.app.data;
+package dev.brumagin.test.data;
 
+import dev.brumagin.app.data.EmployeeDAO;
+import dev.brumagin.app.data.EmployeeDAOPostgresImpl;
+import dev.brumagin.app.data.ExpenseDAO;
+import dev.brumagin.app.data.ExpenseDAOPostgresImpl;
 import dev.brumagin.app.entities.Employee;
 import dev.brumagin.app.entities.Expense;
 import dev.brumagin.app.entities.ExpenseStatus;
@@ -8,7 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-class ExpenseDAOTests {
+class ExpenseDAOTest {
 
     static EmployeeDAO employeeDAO = new EmployeeDAOPostgresImpl();
     static ExpenseDAO expenseDAO  = new ExpenseDAOPostgresImpl();
