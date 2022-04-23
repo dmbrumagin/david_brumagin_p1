@@ -35,7 +35,8 @@ public interface CrudDAO <T> {
             char[] convert = f.getName().toCharArray();
             for(char c : convert){
                 if(Character.isUpperCase(c)){
-                    conversionString.append( "_"+Character.toLowerCase(c));
+                    conversionString.append("_");
+                    conversionString.append(Character.toLowerCase(c));
                 }
                 else {
                     conversionString.append(c);
@@ -46,14 +47,17 @@ public interface CrudDAO <T> {
 
         //System.out.println(entity.getClass().getName().substring(26).toLowerCase());
         StringBuilder statement = new StringBuilder("insert into ");
-        statement.append(entity.getClass().getName().substring(entity.getClass().getPackage().getName().length()+1).toLowerCase() +" (");
+        statement.append(entity.getClass().getName().substring(entity.getClass().getPackage().getName().length()+1).toLowerCase());
+        statement.append(" (");
         for (int i = 0; i < fields.size(); i++) {
            // Optional<Annotation> optionalAnnotation = Arrays.stream(fields[i].getAnnotations()).findFirst();
             //System.out.println(optionalAnnotation.get().annotationType().getName().substring(26));
-            if(i+1< fields.size())
-            statement.append( editedSQLColumns.get(i)+", "); //(fields[i].getName()+",");
+            if(i+1< fields.size()){
+            statement.append(editedSQLColumns.get(i)); //(fields[i].getName()+",");
+            statement.append(", ");}
             else {
-                statement.append( editedSQLColumns.get(i)+") ");//(fields[i].getName()+") ");
+                statement.append( editedSQLColumns.get(i));//(fields[i].getName()+") ");
+                statement.append(") ");
             }
         }
         statement.append("values (");
