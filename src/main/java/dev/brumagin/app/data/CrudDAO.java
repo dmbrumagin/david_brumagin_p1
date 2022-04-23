@@ -1,6 +1,7 @@
 package dev.brumagin.app.data;
 
 import dev.brumagin.app.entities.Column;
+import dev.brumagin.app.entities.PrimaryKey;
 import dev.brumagin.app.utilities.ConnectionUtility;
 import dev.brumagin.app.utilities.LogLevel;
 import dev.brumagin.app.utilities.Logger;
@@ -15,40 +16,48 @@ import java.util.stream.Collectors;
 
 public interface CrudDAO <T> {
     default T createEntity(T entity) {
-      /*  //try {
+      //try {
         Connection connection = ConnectionUtility.createConnection();
-        Field[] fields = entity.getClass().getDeclaredFields();
+        List<Field> fields = Arrays.stream(entity.getClass().getDeclaredFields()).collect(Collectors.toList());
+        System.out.println(Arrays.stream(fields.get(0).getAnnotations()).findFirst().get().annotationType().getName());
+        System.out.println(PrimaryKey.class.getName());
+        for(Field f : fields){
+            System.out.println(f);
+        }
+        fields = fields.stream().filter(n -> Arrays.stream(n.getAnnotations()).findFirst().get().annotationType().getName().equals(PrimaryKey.class.getName())).collect(Collectors.toList());
+        for(Field f : fields){
+            System.out.println(f);
+        }
         List<String> editedSQLColumns= new ArrayList<>();
-        String conversionString ="";
+        StringBuilder conversionString;
         for (Field f : fields){
+            conversionString = new StringBuilder();
             char[] convert = f.getName().toCharArray();
             for(char c : convert){
                 if(Character.isUpperCase(c)){
-                    conversionString+= "_"+Character.toLowerCase(c);
+                    conversionString.append( "_"+Character.toLowerCase(c));
                 }
                 else {
-                    conversionString +=c;
+                    conversionString.append(c);
                 }
             }
-            editedSQLColumns.add(conversionString);
-            conversionString="";
-
+            editedSQLColumns.add(String.valueOf(conversionString));
         }
 
         //System.out.println(entity.getClass().getName().substring(26).toLowerCase());
-        String statement = "insert into ";
-        statement+= entity.getClass().getName().substring(26).toLowerCase() +" (";
-        for (int i = 0; i < fields.length; i++) {
+        StringBuilder statement = new StringBuilder("insert into ");
+        statement.append(entity.getClass().getName().substring(entity.getClass().getPackage().getName().length()+1).toLowerCase() +" (");
+        for (int i = 0; i < fields.size(); i++) {
            // Optional<Annotation> optionalAnnotation = Arrays.stream(fields[i].getAnnotations()).findFirst();
             //System.out.println(optionalAnnotation.get().annotationType().getName().substring(26));
-            if(i+1< fields.length)
-            statement += editedSQLColumns.get(i)+", "; //(fields[i].getName()+",");
+            if(i+1< fields.size())
+            statement.append( editedSQLColumns.get(i)+", "); //(fields[i].getName()+",");
             else {
-                statement += editedSQLColumns.get(i)+") ";//(fields[i].getName()+") ");
+                statement.append( editedSQLColumns.get(i)+") ");//(fields[i].getName()+") ");
             }
         }
-        statement+= "values (";
-        System.out.println(statement);*/
+        statement.append("values (");
+        System.out.println(statement);
 
         return entity;
     }

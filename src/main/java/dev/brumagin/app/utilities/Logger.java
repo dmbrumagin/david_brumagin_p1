@@ -28,8 +28,11 @@ public class Logger {
         String path = System.getProperty("user.dir")+"//expenses.log";
 
         try {
+
             File file = new File(path);
-            boolean write = file.createNewFile(); // attempt to create the file if not found
+
+            if(!file.exists())
+                file.createNewFile(); // attempt to create the file if not found
 
             Files.write(Paths.get(path),
                     logMessage.getBytes(StandardCharsets.UTF_8),
