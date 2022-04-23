@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 public interface CrudDAO <T> {
     default T createEntity(T entity) {
-        //try {
+      /*  //try {
         Connection connection = ConnectionUtility.createConnection();
         Field[] fields = entity.getClass().getDeclaredFields();
         List<String> editedSQLColumns= new ArrayList<>();
@@ -48,7 +48,7 @@ public interface CrudDAO <T> {
             }
         }
         statement+= "values (";
-        System.out.println(statement);
+        System.out.println(statement);*/
 
         return entity;
     }
