@@ -56,7 +56,7 @@ public class EmployeeServiceImpl implements EmployeeService{
      */
     @Override
     public boolean updateEmployee(Employee employee) throws CannotEditException {
-        if(canEdit(employee.getId())){
+        if(canEdit(employee.getEmployeeId())){
             return employeeDAO.updateEmployee(employee);}
         return false;
     }

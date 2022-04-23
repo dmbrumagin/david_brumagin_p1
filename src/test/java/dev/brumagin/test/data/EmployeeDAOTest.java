@@ -14,18 +14,18 @@ class EmployeeDAOTest {
     void create_employee() {
         Employee employee = new Employee(0,"Bob","Dylan");
         employee = employeeDAO.createEmployee(employee);
-        Assertions.assertNotEquals(0,employee.getId());
-        employeeDAO.deleteEmployee(employee.getId());
+        Assertions.assertNotEquals(0,employee.getEmployeeId());
+        employeeDAO.deleteEmployee(employee.getEmployeeId());
     }
 
     @Test
     void get_employee_by_id(){
         Employee employee = new Employee(0,"Bob","Dylan");
         employee = employeeDAO.createEmployee(employee);
-        Employee compare = employeeDAO.getEmployeeById(employee.getId());
+        Employee compare = employeeDAO.getEmployeeById(employee.getEmployeeId());
         Assertions.assertEquals(compare.getFirstName(),employee.getFirstName());
-        employeeDAO.deleteEmployee(employee.getId());
-        employeeDAO.deleteEmployee(compare.getId());
+        employeeDAO.deleteEmployee(employee.getEmployeeId());
+        employeeDAO.deleteEmployee(compare.getEmployeeId());
     }
 
     @Test
@@ -39,9 +39,9 @@ class EmployeeDAOTest {
         List<Employee> employees = employeeDAO.getAllEmployees();
 
         Assertions.assertNotEquals(0,employees.size());
-        employeeDAO.deleteEmployee(employee.getId());
-        employeeDAO.deleteEmployee(employee2.getId());
-        employeeDAO.deleteEmployee(employee3.getId());
+        employeeDAO.deleteEmployee(employee.getEmployeeId());
+        employeeDAO.deleteEmployee(employee2.getEmployeeId());
+        employeeDAO.deleteEmployee(employee3.getEmployeeId());
     }
 
     @Test
@@ -51,14 +51,14 @@ class EmployeeDAOTest {
         employee.setFirstName("test");
         employee.setLastName("update");
         employeeDAO.updateEmployee(employee);
-        Assertions.assertEquals("test",employeeDAO.getEmployeeById(employee.getId()).getFirstName());
-        employeeDAO.deleteEmployee(employee.getId());
+        Assertions.assertEquals("test",employeeDAO.getEmployeeById(employee.getEmployeeId()).getFirstName());
+        employeeDAO.deleteEmployee(employee.getEmployeeId());
     }
 
     @Test
     void delete_employee(){
         Employee employee = new Employee(0,"Bob","Dylan");
         employeeDAO.createEmployee(employee);
-        Assertions.assertTrue(employeeDAO.deleteEmployee(employee.getId()));
+        Assertions.assertTrue(employeeDAO.deleteEmployee(employee.getEmployeeId()));
     }
 }

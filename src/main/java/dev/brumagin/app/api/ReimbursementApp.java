@@ -122,7 +122,7 @@ public class ReimbursementApp {
             String body = context.body();
             Employee employee = gson.fromJson(body, Employee.class);
             int id = Integer.parseInt(context.pathParam("id"));
-            employee.setId(id);
+            employee.setEmployeeId(id);
 
             try {
                 if (employeeService.updateEmployee(employee)) {

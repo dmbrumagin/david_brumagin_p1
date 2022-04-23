@@ -9,9 +9,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Expense {
 
-    private int expenseId;//PK
+    @PrimaryKey
+    private int expenseId;
+    @Column
     private String description;
+    @Column
     private double cost;
+    @Column
     private ExpenseStatus status;
-    private int employeeId;//FK
+    @ForeignKey
+    private int employeeId;
 }

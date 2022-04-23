@@ -30,7 +30,7 @@ public class EmployeeDAOPostgresImpl implements EmployeeDAO{
             ResultSet rs = ps.getGeneratedKeys();
             rs.next();
             int generatedKey = rs.getInt("employee_id");
-            employee.setId(generatedKey);
+            employee.setEmployeeId(generatedKey);
 
             return employee;
         }
@@ -55,7 +55,7 @@ public class EmployeeDAOPostgresImpl implements EmployeeDAO{
             ResultSet rs = ps.executeQuery();
             rs.next();
             Employee employee = new Employee();
-            employee.setId(employeeId);
+            employee.setEmployeeId(employeeId);
             employee.setFirstName(rs.getString("first_name"));
             employee.setLastName(rs.getString("last_name"));
             return employee;
@@ -81,7 +81,7 @@ public class EmployeeDAOPostgresImpl implements EmployeeDAO{
 
             while(rs.next()) {
                 Employee employee = new Employee();
-                employee.setId(rs.getInt("employee_id"));
+                employee.setEmployeeId(rs.getInt("employee_id"));
                 employee.setFirstName(rs.getString("first_name"));
                 employee.setLastName(rs.getString("last_name"));
                 employees.add(employee);
@@ -107,7 +107,7 @@ public class EmployeeDAOPostgresImpl implements EmployeeDAO{
             PreparedStatement ps = connection.prepareStatement(statement);
             ps.setString(1, employee.getFirstName());
             ps.setString(2, employee.getLastName());
-            ps.setInt(3, employee.getId());
+            ps.setInt(3, employee.getEmployeeId());
             return ps.executeUpdate() != 0;
         }
         catch (SQLException e){

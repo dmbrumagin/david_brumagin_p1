@@ -4,13 +4,18 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
 public class Employee {
 
-    private int id;//PK
+    @PrimaryKey
+    private int employeeId;
+    @Column
     private String firstName;
+    @Column
     private String lastName;
 
 }
