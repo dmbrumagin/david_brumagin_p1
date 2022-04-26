@@ -15,10 +15,10 @@ public interface CrudDAO <T> {
           List<Field> fields = Arrays.stream(entity.getClass().getDeclaredFields())
                   .collect(Collectors.toList());
           List<Field> fields2 = fields.stream()
-                  .filter(n -> Arrays.stream(n.getAnnotations()).findFirst().get().annotationType().getName().equals(PrimaryKey.class.getName()))
+                  .filter(n -> Arrays.stream(n.getAnnotations()).findFirst().get().annotationType().isAssignableFrom(PrimaryKey.class))
                   .collect(Collectors.toList());
           fields = fields.stream()
-                  .filter(n -> !Arrays.stream(n.getAnnotations()).findFirst().get().annotationType().getName().equals(PrimaryKey.class.getName()))
+                  .filter(n -> !Arrays.stream(n.getAnnotations()).findFirst().get().annotationType().isAssignableFrom(PrimaryKey.class))
                   .collect(Collectors.toList());
           List<String> editedSQLColumns = new ArrayList<>();
           StringBuilder conversionString;
@@ -40,24 +40,25 @@ public interface CrudDAO <T> {
           StringBuilder statement = new StringBuilder("insert into ");
           statement.append(entity.getClass().getName().substring(entity.getClass().getPackage().getName().length() + 1).toLowerCase());
           statement.append(" (");
+
           for (int i = 0; i < fields.size(); i++) {
               if (i + 1 < fields.size()) {
                   statement.append(editedSQLColumns.get(i));
                   statement.append(", ");
               } else {
                   statement.append(editedSQLColumns.get(i));
-                  statement.append(") ");
+                  statement.append(") values (");
               }
           }
-          statement.append("values (");
           List<Method> methods = Arrays.stream(entity.getClass().getMethods()).collect(Collectors.toList());
-          List<Method> method;
-          List<Method> methods2 = new ArrayList<>();
+          List<Method> methodsCopied = new ArrayList<>();
+          Optional<Method> method;
 
           for (int i = 0; i < fields.size(); i++) {
               String convert = Character.toUpperCase(fields.get(i).getName().charAt(0)) + fields.get(i).getName().substring(1);
-              method = methods.stream().filter(n -> n.getName().equals("get" + convert)).collect(Collectors.toList());
-              methods2.add(method.get(0));
+              method = methods.stream().filter(n -> n.getName().equals("get" + convert )).findFirst();
+              method.ifPresent(methodsCopied::add);
+
               if (i + 1 < fields.size())
                   statement.append(" ?,");
               else {
@@ -66,18 +67,30 @@ public interface CrudDAO <T> {
           }
 
           PreparedStatement ps = connection.prepareStatement(statement.toString(), Statement.RETURN_GENERATED_KEYS);
+
           for (int i = 0; i < fields.size(); i++) {
-              Type type = methods2.get(i).getReturnType();
-              System.out.println(type.getTypeName());
-              if (type.getTypeName().equals("java.lang.String"))
-                  ps.setString(i + 1, (String) methods2.get(i).invoke(entity));
-              else {
-                  System.out.println("other type");
+              Type type = methodsCopied.get(i).getReturnType();
+              String typeString =type.getTypeName().substring(type.getTypeName().lastIndexOf('.')+1);
+              switch (typeString) {
+                  case "String":
+                      ps.setString(i + 1, (String) methodsCopied.get(i).invoke(entity));
+                      break;
+                  case "int":
+                      ps.setInt(i + 1, (Integer) methodsCopied.get(i).invoke(entity));
+                      break;
+                  case "double":
+                      ps.setDouble(i + 1, (Double) methodsCopied.get(i).invoke(entity));
+                      break;
+                  default:
+                      ps.setString(i + 1, String.valueOf(methodsCopied.get(i).invoke(entity)));
+                      break;
               }
           }
+
           ps.execute();
           ResultSet rs = ps.getGeneratedKeys();
           rs.next();
+
           conversionString = new StringBuilder();
           char[] convert2 = fields2.get(0).getName().toCharArray();
           for (char c : convert2) {
@@ -89,13 +102,17 @@ public interface CrudDAO <T> {
               }
           }
           int generatedKey = rs.getInt(String.valueOf(conversionString));
+          String convert = Character.toUpperCase(fields2.get(0).getName().charAt(0)) + fields2.get(0).getName().substring(1);
+          Optional<Method> setPrimaryKey = methods.stream().filter(n -> n.getName().equals("set" + convert )).findFirst();
+
+          if( setPrimaryKey.isPresent()) {
+              setPrimaryKey.get().invoke(entity, generatedKey);
+          }
       }
 
       catch (SQLException e){
           System.out.println("Thrown SQL");
-      } catch (InvocationTargetException e) {
-          e.printStackTrace();
-      } catch (IllegalAccessException e) {
+      } catch (InvocationTargetException | IllegalAccessException e) {
           e.printStackTrace();
       }
         return entity;
