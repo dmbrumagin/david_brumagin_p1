@@ -26,19 +26,24 @@ public class Logger {
 
         String logMessage = level.name() +" " +  message + " " + new Date() + "\n";
         String path = System.getProperty("user.dir")+"//expenses.log";
+        boolean created;
 
         try {
 
             File file = new File(path);
 
-            if(!file.exists())
-                file.createNewFile(); // attempt to create the file if not found
+            if(!file.exists()) {
+                created = file.createNewFile(); // attempt to create the file if not found
+                if(!created)
+                    throw new IOException("Could not create file that does not exist: expenses.log\n"+
+                    "Please check write access to : user.dir");
+            }
 
             Files.write(Paths.get(path),
                     logMessage.getBytes(StandardCharsets.UTF_8),
                     StandardOpenOption.APPEND);
         } catch (IOException e) {
-            //e.printStackTrace();
+            System.out.println(e.getMessage());
         }
 
     }

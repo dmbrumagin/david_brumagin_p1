@@ -9,7 +9,6 @@ import dev.brumagin.app.entities.Expense;
 import dev.brumagin.app.entities.ExpenseStatus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
 import java.util.List;
 
 class ExpenseDAOTest {

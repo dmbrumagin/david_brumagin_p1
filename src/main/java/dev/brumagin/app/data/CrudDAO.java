@@ -97,7 +97,7 @@ public interface CrudDAO <T> {
                 setPrimaryKey.get().invoke(entity, generatedKey);
 
         } catch (SQLException | InvocationTargetException | IllegalAccessException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
         return entity;
     }

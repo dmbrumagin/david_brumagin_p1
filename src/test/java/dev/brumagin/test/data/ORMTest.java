@@ -7,15 +7,15 @@ import dev.brumagin.app.entities.Expense;
 import dev.brumagin.app.entities.ExpenseStatus;
 import org.junit.jupiter.api.Test;
 
-public class ORMTest {
+class ORMTest {
 
     EmployeeORM employeeD = new EmployeeORM();
     ExpenseORM expenseORM = new ExpenseORM();
 
     @Test
-    void create_employee(){
+    void create_entity(){
         Employee employee = new Employee(0,"Bob","Dylan");
-       employee= employeeD.createEntity(employee);
+        employee= employeeD.createEntity(employee);
         Expense expense = new Expense(0,"pie",3.14, ExpenseStatus.PENDING,employee.getEmployeeId());
         expenseORM.createEntity(expense);
     }
