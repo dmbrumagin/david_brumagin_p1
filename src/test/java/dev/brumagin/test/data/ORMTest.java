@@ -15,7 +15,7 @@ public class ORMTest {
     @Test
     void create_employee(){
         Employee employee = new Employee(0,"Bob","Dylan");
-        employeeD.createEntity(employee);
+       employee= employeeD.createEntity(employee);
         Expense expense = new Expense(0,"pie",3.14, ExpenseStatus.PENDING,employee.getEmployeeId());
         expenseORM.createEntity(expense);
     }
