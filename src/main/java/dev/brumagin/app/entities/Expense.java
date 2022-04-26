@@ -9,14 +9,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Expense {
 
-    @PrimaryKey
+    @PrimaryKey(name = "expense_id")
     private int expenseId;
-    @Column
+    @Column(name = "description")
     private String description;
-    @Column
+    @Column(name = "cost")
     private double cost;
-    @Column
+    @Column(name = "status")
     private ExpenseStatus status;
     @ForeignKey
+    @Column(name = "employee_id")
     private int employeeId;
 }

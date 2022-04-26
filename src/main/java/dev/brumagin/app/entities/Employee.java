@@ -11,11 +11,11 @@ import lombok.NoArgsConstructor;
 @Entity
 public class Employee {
 
-    @PrimaryKey
+    @PrimaryKey(name ="employee_id")
     private int employeeId;
-    @Column
+    @Column(name ="first_name")
     private String firstName;
-    @Column
+    @Column(name ="last_name")
     private String lastName;
 
 }
