@@ -8,8 +8,8 @@ import java.util.Map;
 
 public class EntityMapper {
 
-    public Map<String,Class> entities= new HashMap<>();
-    public Map<String,String> primaryKeys = new HashMap<>();
+    private Map<String,Class> entities= new HashMap<>();
+    private Map<String,String> primaryKeys = new HashMap<>();
 
     EntityMapper(){
         entities.put("Employee",Employee.class);
@@ -18,4 +18,19 @@ public class EntityMapper {
         primaryKeys.put("Expense","expense_id");
     }
 
+    public Map<String, Class> getEntities() {
+        return entities;
+    }
+
+    public void setEntities(Map<String, Class> entities) {
+        this.entities = entities;
+    }
+
+    public Map<String, String> getPrimaryKeys() {
+        return primaryKeys;
+    }
+
+    public void setPrimaryKeys(Map<String, String> primaryKeys) {
+        this.primaryKeys = primaryKeys;
+    }
 }

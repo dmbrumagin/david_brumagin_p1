@@ -14,7 +14,6 @@ import java.util.stream.Stream;
 public interface CrudDAO <T> {
     default T createEntity(T entity) {
         try {
-            System.out.println(entity.getClass());
             Connection connection = ConnectionUtility.createConnection();
             List<Field> fields = Arrays.stream(entity.getClass().getDeclaredFields()).collect(Collectors.toList());
             List<Field> fields2 = fields.stream().filter(n -> n.isAnnotationPresent(PrimaryKey.class)).collect(Collectors.toList());
@@ -74,15 +73,14 @@ public interface CrudDAO <T> {
     default T getEntityById(int id){
         try {
             EntityMapper mapEntity = new EntityMapper();
-            Class<T> type = mapEntity.entities.get(Arrays.stream(getClass().getTypeParameters()).findFirst().get().getName());
+            Class<T> type = mapEntity.getEntities().get(Arrays.stream(getClass().getTypeParameters()).findFirst().get().getName());
             List<Method> methods = Arrays.stream(type.getMethods()).filter(n -> n.getName().contains("set")).collect(Collectors.toList());
             Connection connection = ConnectionUtility.createConnection();
             StringBuilder statement = new StringBuilder("select * from ");
             statement.append(Arrays.stream(getClass().getTypeParameters()).findFirst().get().getName().toLowerCase());
             statement.append(" where ");
-            statement.append(mapEntity.primaryKeys.get(Arrays.stream(getClass().getTypeParameters()).findFirst().get().getName()));
+            statement.append(mapEntity.getPrimaryKeys().get(Arrays.stream(getClass().getTypeParameters()).findFirst().get().getName()));
             statement.append(" = ?;");
-            System.out.println(statement);
             PreparedStatement ps = connection.prepareStatement(statement.toString());
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
@@ -125,7 +123,7 @@ public interface CrudDAO <T> {
    default List<T> getAllEntities(){
        try {
            EntityMapper mapEntity = new EntityMapper();
-           Class<T> type = mapEntity.entities.get(Arrays.stream(getClass().getTypeParameters()).findFirst().get().getName());
+           Class<T> type = mapEntity.getEntities().get(Arrays.stream(getClass().getTypeParameters()).findFirst().get().getName());
            List<Method> methods = Arrays.stream(type.getMethods()).filter(n -> n.getName().contains("set")).collect(Collectors.toList());
            Connection connection = ConnectionUtility.createConnection();
            StringBuilder statement = new StringBuilder("select * from ");
@@ -164,7 +162,7 @@ public interface CrudDAO <T> {
                }
                entities.add(entity);
            }
-           return entities;
+           return new ArrayList<>();
        }
        catch (SQLException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
              Logger.log("**The entity was not found; please check database access and parameters.**", LogLevel.WARNING);
@@ -182,9 +180,6 @@ public interface CrudDAO <T> {
             statement.append(entity.getClass().getName().substring(entity.getClass().getPackage().getName().length() + 1).toLowerCase());
             statement.append(" set ");
             List<Method> methods = Arrays.asList(entity.getClass().getMethods());
-            for(Field f : fields){
-                System.out.println(f.getAnnotation(Column.class).name());
-            }
             Method method;
             for (int i = 0; i < fields.size(); i++) {
                 statement.append(fields.get(i).getAnnotation(Column.class).name());
