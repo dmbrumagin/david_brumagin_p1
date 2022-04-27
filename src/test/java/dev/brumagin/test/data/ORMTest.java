@@ -38,4 +38,20 @@ class ORMTest {
         expenseORM.getEntityById(expense.getExpenseId());
     }
 
+    @Test
+    void get_all_entities(){
+        employeeD.getAllEntities();
+        expenseORM.getAllEntities();
+    }
+
+    @Test
+    void update_entity(){
+        Employee employee = new Employee(0,"Bob","Dylan");
+        employee=(Employee) employeeD.createEntity(employee);
+        System.out.println(employee);
+        employee.setLastName("Test");
+        employee = employeeD.updateEntity(employee);
+
+    }
+
 }
