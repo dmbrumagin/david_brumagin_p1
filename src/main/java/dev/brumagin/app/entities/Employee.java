@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Entity
 public class Employee {
 
+
     @PrimaryKey(name ="employee_id")
     private int employeeId;
     @Column(name ="first_name")

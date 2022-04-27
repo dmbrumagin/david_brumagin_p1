@@ -10,24 +10,32 @@ import org.junit.jupiter.api.Test;
 
 class ORMTest {
 
-    EmployeeORM employeeD = new EmployeeORM();
-    ExpenseORM expenseORM = new ExpenseORM();
+    EmployeeORM<Employee> employeeD = new EmployeeORM();
+    ExpenseORM<Expense> expenseORM = new ExpenseORM();
 
     @Test
     void create_entity(){
         Employee employee = new Employee(0,"Bob","Dylan");
-        employee= employeeD.createEntity(employee);
-        Expense expense = new Expense(0,"pie",3.14, ExpenseStatus.PENDING,employee.getEmployeeId());
-        expense = expenseORM.createEntity(expense);
+        employee=(Employee) employeeD.createEntity(employee);
+      //  Expense expense = new Expense(0,"pie",3.14, ExpenseStatus.PENDING,employee.getEmployeeId());
+       // expense = expenseORM.createEntity(expense);
+        System.out.println(employee.getEmployeeId() +" em");
+       // System.out.println(expense.getExpenseId() + " ex");
         Assertions.assertNotEquals(0,employee.getEmployeeId());
-        Assertions.assertNotEquals(0,expense.getExpenseId());
+      //  Assertions.assertNotEquals(0,expense.getExpenseId());
     }
 
     @Test
     void get_entity(){
         Employee employee = new Employee(0,"Bob","Dylan");
         employee= employeeD.createEntity(employee);
-       // employeeD.getEntityById(employee.getEmployeeId());
+        System.out.println("employee id : "+employee.getEmployeeId());
+        employee = employeeD.getEntityById(employee.getEmployeeId());
+        System.out.println("employee id 2: "+employee.getEmployeeId());
+        Expense expense = new Expense(0,"pie",3.14, ExpenseStatus.PENDING,employee.getEmployeeId());
+        expense = expenseORM.createEntity(expense);
+        System.out.println(expense.getExpenseId() + "  :expense id");
+        expenseORM.getEntityById(expense.getExpenseId());
     }
 
 }

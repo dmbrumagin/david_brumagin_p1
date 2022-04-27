@@ -1,20 +1,17 @@
 package dev.brumagin.app.data;
 
-import dev.brumagin.app.entities.Column;
-import dev.brumagin.app.entities.Employee;
-import dev.brumagin.app.entities.ForeignKey;
-import dev.brumagin.app.entities.PrimaryKey;
+import dev.brumagin.app.entities.*;
 import dev.brumagin.app.utilities.ConnectionUtility;
-import dev.brumagin.app.utilities.LogLevel;
-import dev.brumagin.app.utilities.Logger;
-
-import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.sql.*;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public interface CrudDAO <T> {
+
+
 
 
     default T createEntity(T entity) {
@@ -75,48 +72,57 @@ public interface CrudDAO <T> {
         }
         return entity;
     }
-/*
+
     default T getEntityById(int id){
-
-        T persistentClass = null;
-        T parameterizedType = (T) persistentClass;
-            //System.out.println("Return type: " + parameterizedType.getTypeName());
-           // persistentClass = (T) parameterizedType.getActualTypeArguments()[0];
-            System.out.println("Parameter type: " + ((Type) persistentClass).getTypeName());
-        
-
-
-        System.out.println(getClass().getDeclaringClass());
-        System.out.println(persistentClass);
         try {
-
+            EntityMapper mapEntity = new EntityMapper();
+            Class type = mapEntity.entities.get(Arrays.stream(getClass().getTypeParameters()).findFirst().get().getName());
+            List<Method> methods = Arrays.stream(type.getMethods()).filter(n -> n.getName().contains("set")).collect(Collectors.toList());
             Connection connection = ConnectionUtility.createConnection();
-            String statement = "select * from employee where employee_id=?;";
-            PreparedStatement ps = connection.prepareStatement(statement);
+            StringBuilder statement = new StringBuilder("select * from ");
+            statement.append(Arrays.stream(getClass().getTypeParameters()).findFirst().get().getName().toLowerCase());
+            statement.append(" where ");
+            statement.append(mapEntity.primaryKeys.get(Arrays.stream(getClass().getTypeParameters()).findFirst().get().getName()));
+            statement.append(" = ?;");
+            System.out.println(statement);
+            PreparedStatement ps = connection.prepareStatement(statement.toString());
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             rs.next();
-            T type = null;
-            System.out.println(type.getClass().getName());
-            List<Field> fields = Arrays.stream(type.getClass().getFields()).collect(Collectors.toList());
-            for(Field f : fields){
-                System.out.println(f);
-            }
-            List<Method> methods = Arrays.stream(type.getClass().getMethods()).filter(n->n.getName().contains("get")).collect(Collectors.toList());
-            for(Method m : methods){
-                System.out.println(m);
-            }
-           // employee.setEmployeeId(employeeId);
-          //  type.setFirstName(rs.getString("first_name"));
-           // type.setLastName(rs.getString("last_name"));
-            return null;
-        }
-        catch (SQLException e){
-          //  Logger.log("**The employee was not found; please check database access and parameters.**\nemployee id: " +employeeId, LogLevel.WARNING);
-            return null;
-        }
+            T entity = (T) type.newInstance();
 
-    };*/ // Get an entity by ID
+
+            for (int i = 0; i < methods.size(); i++) {
+                StringBuilder methodName = new StringBuilder(methods.get(i).getName().substring(3));
+                methodName.replace(0, 1, String.valueOf(Character.toLowerCase(methodName.charAt(0))));
+                for (int j = 0; j < methodName.length(); j++) {
+                    if (Character.isUpperCase(methodName.charAt(j))) {
+                        methodName.replace(j, j + 1, String.valueOf(Character.toLowerCase(methodName.charAt(j))));
+                        methodName.insert(j, "_");
+
+                        break;
+                    }
+                }
+                if (Stream.of(ExpenseStatus.values()).anyMatch(n -> {
+                    try {
+                        return n.name().equals(rs.getObject(String.valueOf(methodName)));
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    return false;
+                })) {
+                    methods.get(i).invoke(entity, ExpenseStatus.valueOf(String.valueOf(rs.getObject(String.valueOf(methodName)))));
+                } else {
+                    methods.get(i).invoke(entity, rs.getObject(String.valueOf(methodName)));
+                }
+            }
+            return entity;
+        }
+        catch (SQLException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            //  Logger.log("**The employee was not found; please check database access and parameters.**\nemployee id: " +employeeId, LogLevel.WARNING);
+            return null;
+        }
+    }
 
   /*  default List<T> getAllEntities(){
 
