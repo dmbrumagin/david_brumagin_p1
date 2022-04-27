@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
 public class Expense {
 
     @PrimaryKey(name = "expense_id")
@@ -17,7 +18,6 @@ public class Expense {
     private double cost;
     @Column(name = "status")
     private ExpenseStatus status;
-    @ForeignKey
     @Column(name = "employee_id")
     private int employeeId;
 }

@@ -18,7 +18,7 @@ public interface CrudDAO <T> {
             Connection connection = ConnectionUtility.createConnection();
             List<Field> fields = Arrays.stream(entity.getClass().getDeclaredFields()).collect(Collectors.toList());
             List<Field> fields2 = fields.stream().filter(n -> n.isAnnotationPresent(PrimaryKey.class)).collect(Collectors.toList());
-            fields = fields.stream().filter(n -> n.isAnnotationPresent(Column.class) || n.isAnnotationPresent(ForeignKey.class)).collect(Collectors.toList());
+            fields = fields.stream().filter(n -> n.isAnnotationPresent(Column.class)).collect(Collectors.toList());
             StringBuilder statement = new StringBuilder("insert into ");
             statement.append(entity.getClass().getName().substring(entity.getClass().getPackage().getName().length() + 1).toLowerCase());
             statement.append(" (");
@@ -66,7 +66,7 @@ public interface CrudDAO <T> {
                 setPrimaryKey.get().invoke(entity, generatedKey);
 
         } catch (SQLException | InvocationTargetException | IllegalAccessException e) {
-            System.out.println(e.getMessage());
+            Logger.log("**The employee was not created; please check database access and parameters.**", LogLevel.WARNING);
         }
         return entity;
     }
@@ -74,7 +74,7 @@ public interface CrudDAO <T> {
     default T getEntityById(int id){
         try {
             EntityMapper mapEntity = new EntityMapper();
-            Class type = mapEntity.entities.get(Arrays.stream(getClass().getTypeParameters()).findFirst().get().getName());
+            Class<T> type = mapEntity.entities.get(Arrays.stream(getClass().getTypeParameters()).findFirst().get().getName());
             List<Method> methods = Arrays.stream(type.getMethods()).filter(n -> n.getName().contains("set")).collect(Collectors.toList());
             Connection connection = ConnectionUtility.createConnection();
             StringBuilder statement = new StringBuilder("select * from ");
@@ -87,7 +87,7 @@ public interface CrudDAO <T> {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             rs.next();
-            T entity = (T) type.newInstance();
+            T entity = type.newInstance();
 
 
             for (int i = 0; i < methods.size(); i++) {
@@ -117,7 +117,7 @@ public interface CrudDAO <T> {
             return entity;
         }
         catch (SQLException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
-            //  Logger.log("**The employee was not found; please check database access and parameters.**\nemployee id: " +employeeId, LogLevel.WARNING);
+              Logger.log("**The employee was not found; please check database access and parameters.**", LogLevel.WARNING);
             return null;
         }
     }
@@ -125,7 +125,7 @@ public interface CrudDAO <T> {
    default List<T> getAllEntities(){
        try {
            EntityMapper mapEntity = new EntityMapper();
-           Class type = mapEntity.entities.get(Arrays.stream(getClass().getTypeParameters()).findFirst().get().getName());
+           Class<T> type = mapEntity.entities.get(Arrays.stream(getClass().getTypeParameters()).findFirst().get().getName());
            List<Method> methods = Arrays.stream(type.getMethods()).filter(n -> n.getName().contains("set")).collect(Collectors.toList());
            Connection connection = ConnectionUtility.createConnection();
            StringBuilder statement = new StringBuilder("select * from ");
@@ -135,7 +135,7 @@ public interface CrudDAO <T> {
            ResultSet rs = ps.executeQuery();
            List<T> entities = new ArrayList<>();
            while (rs.next()) {
-               T entity = (T) type.newInstance();
+               T entity = type.newInstance();
 
 
                for (int i = 0; i < methods.size(); i++) {
@@ -153,7 +153,7 @@ public interface CrudDAO <T> {
                        try {
                            return n.name().equals(rs.getObject(String.valueOf(methodName)));
                        } catch (SQLException e) {
-                           e.printStackTrace();
+                           Logger.log("**The entity was not found; please check database access and parameters.**", LogLevel.WARNING);
                        }
                        return false;
                    })) {
@@ -164,11 +164,10 @@ public interface CrudDAO <T> {
                }
                entities.add(entity);
            }
-           entities.forEach(System.out::println);
            return entities;
        }
        catch (SQLException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
-           //  Logger.log("**The employee was not found; please check database access and parameters.**\nemployee id: " +employeeId, LogLevel.WARNING);
+             Logger.log("**The entity was not found; please check database access and parameters.**", LogLevel.WARNING);
            return null;
        }
 
@@ -220,7 +219,7 @@ public interface CrudDAO <T> {
             return entity;
         }
         catch (InvocationTargetException|IllegalAccessException|SQLException e){
-         //   Logger.log("**The employee was not found; please check database access and parameters.**\n" + employee, LogLevel.WARNING);
+            Logger.log("**The entity was not found; please check database access and parameters.**", LogLevel.WARNING);
             return null;
         }
     }
