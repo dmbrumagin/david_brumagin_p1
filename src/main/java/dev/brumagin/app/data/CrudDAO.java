@@ -1,16 +1,20 @@
 package dev.brumagin.app.data;
 
+
 import dev.brumagin.app.entities.*;
 import dev.brumagin.app.utilities.ConnectionUtility;
 import dev.brumagin.app.utilities.LogLevel;
 import dev.brumagin.app.utilities.Logger;
-
 import java.lang.reflect.*;
 import java.sql.*;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * Unimplemented Generic DAO
+ * @param <T> Type of entity
+ */
 public interface CrudDAO <T> {
     default T createEntity(T entity) {
         try {
@@ -173,8 +177,12 @@ public interface CrudDAO <T> {
 
     default T updateEntity(T entity){
         try {
-            List<Field> fields = Arrays.stream(entity.getClass().getDeclaredFields()).filter(n->n.isAnnotationPresent(Column.class)).collect(Collectors.toList());
-            List<Field> primary =  Arrays.stream(entity.getClass().getDeclaredFields()).filter(n->n.isAnnotationPresent(PrimaryKey.class)).collect(Collectors.toList());
+            List<Field> fields = Arrays.stream(entity.getClass().getDeclaredFields())
+                    .filter(n->n.isAnnotationPresent(Column.class))
+                    .collect(Collectors.toList());
+            List<Field> primary =  Arrays.stream(entity.getClass().getDeclaredFields())
+                    .filter(n->n.isAnnotationPresent(PrimaryKey.class))
+                    .collect(Collectors.toList());
             Connection connection = ConnectionUtility.createConnection();
             StringBuilder statement = new StringBuilder("update ");
             statement.append(entity.getClass().getName().substring(entity.getClass().getPackage().getName().length() + 1).toLowerCase());
