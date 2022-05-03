@@ -29,12 +29,9 @@ class ORMTest {
     void get_entity(){
         Employee employee = new Employee(0,"Bob","Dylan");
         employee= employeeORM.createEntity(employee);
-        System.out.println("employee id : "+employee.getEmployeeId());
         employee = employeeORM.getEntityById(employee.getEmployeeId());
-        System.out.println("employee id 2: "+employee.getEmployeeId());
         Expense expense = new Expense(0,"pie",3.14, ExpenseStatus.PENDING,employee.getEmployeeId());
         expense = expenseORM.createEntity(expense);
-        System.out.println(expense.getExpenseId() + "  :expense id");
         expenseORM.getEntityById(expense.getExpenseId());
     }
 
@@ -48,9 +45,7 @@ class ORMTest {
     void update_entity(){
         Employee employee = new Employee(0,"Bob","Dylan");
         employee= employeeORM.createEntity(employee);
-        System.out.println(employee);
         employee.setLastName("Test");
-        employee = employeeORM.updateEntity(employee);
         Expense expense = new Expense(0,"pie",3.14, ExpenseStatus.PENDING,employee.getEmployeeId());
         expense = expenseORM.createEntity(expense);
         expense.setDescription("test");

@@ -105,9 +105,9 @@ public interface CrudDAO <T> {
                 }
                 if (Stream.of(ExpenseStatus.values()).anyMatch(n -> {
                     try {
-                        return n.name().equals(rs.getObject(String.valueOf(methodName)));
+                        return n.name().equals(String.valueOf(rs.getObject(String.valueOf(methodName))));
                     } catch (SQLException e) {
-                        e.printStackTrace();
+                        Logger.log("**The entity was not found; please check database access and parameters.**", LogLevel.WARNING);
                     }
                     return false;
                 })) {
