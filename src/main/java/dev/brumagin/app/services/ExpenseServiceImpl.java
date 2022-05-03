@@ -2,6 +2,7 @@ package dev.brumagin.app.services;
 
 import dev.brumagin.app.data.ExpenseDAO;
 import dev.brumagin.app.data.ExpenseDAOPostgresImpl;
+import dev.brumagin.app.data.NegativeExpenseException;
 import dev.brumagin.app.entities.CannotEditException;
 import dev.brumagin.app.entities.Expense;
 import dev.brumagin.app.entities.ExpenseStatus;
@@ -27,7 +28,9 @@ public class ExpenseServiceImpl implements ExpenseService{
      * @return if the expense was successfully created
      */
     @Override
-    public Expense createExpense(Expense expense){
+    public Expense createExpense(Expense expense) throws NegativeExpenseException {
+        if (expense.getCost() < 0)
+            throw new NegativeExpenseException();
         return expenseDAO.createExpense(expense);
     }
 
@@ -82,8 +85,11 @@ public class ExpenseServiceImpl implements ExpenseService{
      * @throws CannotEditException the update cannot be completed because the record is not PENDING
      */
     @Override
-    public boolean updateExpense(Expense expense,ExpenseStatus status) throws CannotEditException {
+    public boolean updateExpense(Expense expense,ExpenseStatus status) throws CannotEditException, NegativeExpenseException {
         if(expenseDAO.getExpenseById(expense.getExpenseId()) != null){
+            if(expense.getCost() < 0)
+                throw new NegativeExpenseException();
+
             if(expenseDAO.getExpenseById(expense.getExpenseId()).getStatus().name().equals("PENDING")) {
                 expense.setStatus(status);
                 return expenseDAO.updateExpense(expense);

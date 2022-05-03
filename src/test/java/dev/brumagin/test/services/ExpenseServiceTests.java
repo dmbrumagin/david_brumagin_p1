@@ -1,5 +1,6 @@
 package dev.brumagin.test.services;
 
+import dev.brumagin.app.data.NegativeExpenseException;
 import dev.brumagin.app.entities.CannotEditException;
 import dev.brumagin.app.entities.Employee;
 import dev.brumagin.app.entities.Expense;
@@ -19,7 +20,7 @@ class ExpenseServiceTests {
     ExpenseService expenseService = new ExpenseServiceImpl();
 
     @Test
-    void create_expense() throws CannotEditException {
+    void create_expense() throws CannotEditException, NegativeExpenseException {
         Employee employee = new Employee(0,"Bob","Dylan");
         employeeService.createEmployee(employee);
         Expense expense = new Expense(0,"Ferrari",64333.34, ExpenseStatus.PENDING,employee.getEmployeeId());
@@ -30,7 +31,7 @@ class ExpenseServiceTests {
     }
 
     @Test
-    void get_expense_by_id() throws CannotEditException {
+    void get_expense_by_id() throws CannotEditException, NegativeExpenseException {
         Employee employee = new Employee(0,"Circle","Lover");
         employee = employeeService.createEmployee(employee);
         Expense expense = new Expense(0,"pie",3.14, ExpenseStatus.PENDING,employee.getEmployeeId());
@@ -41,7 +42,7 @@ class ExpenseServiceTests {
     }
 
     @Test
-    void get_all_expenses() throws CannotEditException {
+    void get_all_expenses() throws CannotEditException, NegativeExpenseException {
         Employee employee = new Employee(0,"Bob","Dylan");
         employeeService.createEmployee(employee);
         Expense expense = new Expense(0,"pie",3.14, ExpenseStatus.PENDING,employee.getEmployeeId());
@@ -53,7 +54,7 @@ class ExpenseServiceTests {
     }
 
     @Test
-    void update_expense() throws CannotEditException {
+    void update_expense() throws CannotEditException, NegativeExpenseException {
         Employee employee = new Employee(0,"Bob","Dylan");
         employee =   employeeService.createEmployee(employee);
         Expense expense = new Expense(0,"pie",3.14, ExpenseStatus.PENDING,employee.getEmployeeId());
@@ -66,7 +67,7 @@ class ExpenseServiceTests {
     }
 
     @Test
-    void delete_expense() throws CannotEditException {
+    void delete_expense() throws CannotEditException, NegativeExpenseException {
         Employee employee = new Employee(0,"Bob","Dylan");
         employee =   employeeService.createEmployee(employee);
         Expense expense = new Expense(0,"pie",3.14, ExpenseStatus.PENDING,employee.getEmployeeId());

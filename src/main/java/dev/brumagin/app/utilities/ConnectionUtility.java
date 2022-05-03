@@ -1,5 +1,6 @@
 package dev.brumagin.app.utilities;
 
+import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
@@ -8,24 +9,19 @@ import java.sql.SQLException;
  */
 public class ConnectionUtility {
 
-    private ConnectionUtility(){
-
-    }
-
     /**
      * The method that allows a database connection to be established
      * @return the database connection
      */
-    public static java.sql.Connection createConnection() {
-        java.sql.Connection connection = null;
+    public static Connection createConnection() {
+        Connection connection;
         try {
             String url = System.getenv("EXPENSEDB");
             connection = DriverManager.getConnection(url);
-
+            return connection;
         } catch (SQLException e) {
             Logger.log("Cannot access database. Please verify database path and credentials.",LogLevel.ERROR);
         }
-
-        return connection;
+        return null;
     }
 }

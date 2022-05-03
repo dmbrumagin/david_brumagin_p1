@@ -2,6 +2,7 @@ package dev.brumagin.app.api;
 
 
 import com.google.gson.Gson;
+import dev.brumagin.app.data.NegativeExpenseException;
 import dev.brumagin.app.entities.*;
 import dev.brumagin.app.services.EmployeeService;
 import dev.brumagin.app.services.EmployeeServiceImpl;
@@ -22,6 +23,11 @@ public class ReimbursementApp {
     static final ExpenseService expenseService = new ExpenseServiceImpl(); // API -> DAO
     static final Gson gson = new Gson(); //JSON formatter
     static Javalin app = Javalin.create(); //Create web application
+    static String employeeURI = "/employees";
+    static String employeeIdURI = "/employees/{id}";
+    static String expensesURI = "/expenses";
+    static String expensesIdURI = "/expenses/{id}";
+    static String employeeIdExpensesURI = "/employees/{id}/expenses";
 
     public static void main(String[] args) {
 
@@ -79,7 +85,7 @@ public class ReimbursementApp {
     }
 
     public static void createEmployeeRoute() {
-        app.post("/employees", context -> {
+        app.post(employeeURI, context -> {
             String body = context.body();
             Employee employee = gson.fromJson(body, Employee.class);
 
@@ -94,14 +100,14 @@ public class ReimbursementApp {
     }
 
     public static void getAllEmployeesRoute() {
-        app.get("/employees", context -> {
+        app.get(employeeURI, context -> {
             String json = gson.toJson(employeeService.getAllEmployees());
             context.result(json);
         });
     }
 
     public static void getEmployeeByIdRoute(){
-        app.get("/employees/{id}", context -> {
+        app.get(employeeIdURI, context -> {
             int id = Integer.parseInt(context.pathParam("id"));
             Employee employee = employeeService.getEmployeeById(id);
 
@@ -119,7 +125,7 @@ public class ReimbursementApp {
     }
 
     public static void updateEmployeeByIdRoute(){
-        app.put("/employees/{id}", context -> {
+        app.put(employeeIdURI, context -> {
             String body = context.body();
             Employee employee = gson.fromJson(body, Employee.class);
             int id = Integer.parseInt(context.pathParam("id"));
@@ -142,7 +148,7 @@ public class ReimbursementApp {
     }
 
     public static void deleteEmployeeByIdRoute(){
-        app.delete("/employees/{id}", context -> {
+        app.delete(employeeIdURI, context -> {
             int id = Integer.parseInt(context.pathParam("id"));
 
             try {
@@ -161,24 +167,27 @@ public class ReimbursementApp {
     }
 
     public static void createExpenseRoute(){
-        app.post("/expenses", context -> {
+        app.post(expensesURI, context -> {
             String body = context.body();
             Expense expense = gson.fromJson(body, Expense.class);
-            if (expense.getCost() < 0) {
+            try {
+                if (expenseService.createExpense(expense) != null) {
+                    context.status(201);
+                    context.result("Created a new expense: " + expense);
+                } else {
+                    context.status(400);
+                    context.result("Did not create a new expense: " + expense);
+                }
+            }
+            catch (NegativeExpenseException e){
                 context.status(400);
                 context.result("Expense was negative. Did not create a new expense: " + expense);
-            } else if (expenseService.createExpense(expense)!=null) {
-                context.status(201);
-                context.result("Created a new expense: " + expense);
-            } else {
-                context.status(400);
-                context.result("Did not create a new expense: " + expense);
             }
         });
     }
 
     public static void getAllExpensesRoute(){
-        app.get("/expenses", context -> {
+        app.get(expensesURI, context -> {
             String json;
             List<Expense> expenses;
             String queryParam = context.queryParam("status");
@@ -195,7 +204,7 @@ public class ReimbursementApp {
     }
 
     public static void getExpenseByIdRoute(){
-        app.get("/expenses/{id}", context -> {
+        app.get(expensesIdURI, context -> {
             int id = Integer.parseInt(context.pathParam("id"));
             Expense expense = expenseService.getExpenseById(id);
 
@@ -210,16 +219,13 @@ public class ReimbursementApp {
     }
 
     public static void updateExpenseByIdRoute(){
-        app.put("/expenses/{id}", context -> {
+        app.put(expensesIdURI, context -> {
             String body = context.body();
             int id = Integer.parseInt(context.pathParam("id"));
             Expense expense = gson.fromJson(body, Expense.class);
             expense.setExpenseId(id);
             try {
-                if (expense.getCost() < 0) {
-                    context.status(400);
-                    context.result("Expense was negative. Did not create a new expense: " + expense);
-                } else if (expenseService.updateExpense(expense, ExpenseStatus.PENDING)) {
+                if (expenseService.updateExpense(expense, ExpenseStatus.PENDING)) {
                     context.status(200);
                     context.result("Updated expense: " + expense);
                 } else {
@@ -229,12 +235,15 @@ public class ReimbursementApp {
             } catch (CannotEditException e) {
                 context.status(409);
                 context.result("Failed to update expense: \n" + expense.getExpenseId() + "\nStatus was not PENDING");
+            } catch (NegativeExpenseException e){
+                context.status(400);
+                context.result("Expense was negative. Did not create a new expense: " + expense);
             }
         });
     }
 
     public static void updateExpenseStatusRoute(String pathParam){
-        app.patch("/expenses/{id}/"+pathParam, context -> {
+        app.patch(expensesIdURI+"/"+pathParam, context -> {
             String body = context.body();
             int id = Integer.parseInt(context.pathParam("id"));
             Expense expense = gson.fromJson(body, Expense.class);
@@ -252,12 +261,15 @@ public class ReimbursementApp {
             } catch (CannotEditException e) {
                 context.status(409);
                 context.result("Failed to update expense: \n" + expense.getExpenseId() + "\nStatus was not PENDING");
+            } catch (NegativeExpenseException e){
+                context.status(400);
+                context.result("Expense was negative. Did not create a new expense: " + expense);
             }
         });
     }
 
     public static void deleteExpenseByIdRoute(){
-        app.delete("/expenses/{id}", context -> {
+        app.delete(expensesIdURI, context -> {
             String body = context.body();
             Expense expense = gson.fromJson(body, Expense.class);
             int id = Integer.parseInt(context.pathParam("id"));
@@ -278,7 +290,7 @@ public class ReimbursementApp {
     }
 
     public static void createExpenseByEmployeeIdRoute(){
-        app.post("/employees/{id}/expenses", context -> {
+        app.post(employeeIdExpensesURI, context -> {
             String body = context.body();
             int id = Integer.parseInt(context.pathParam("id"));
             Expense expense = gson.fromJson(body, Expense.class);
@@ -297,7 +309,7 @@ public class ReimbursementApp {
     }
 
     public static void getExpensesByEmployeeIdRoute(){
-        app.get("/employees/{id}/expenses", context -> {
+        app.get(employeeIdExpensesURI, context -> {
             int id = Integer.parseInt(context.pathParam("id"));
             List<Expense> expenses = expenseService.getAllExpenses(id);
 

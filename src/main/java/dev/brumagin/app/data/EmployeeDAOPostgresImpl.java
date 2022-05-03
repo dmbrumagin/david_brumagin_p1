@@ -90,7 +90,7 @@ public class EmployeeDAOPostgresImpl implements EmployeeDAO{
         }
         catch (SQLException e){
             Logger.log("**There are no employees; please check database access.**",LogLevel.WARNING);
-            return employees;
+            return null;
         }
     }
 

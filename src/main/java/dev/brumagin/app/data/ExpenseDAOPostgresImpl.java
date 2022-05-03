@@ -97,7 +97,7 @@ public class ExpenseDAOPostgresImpl implements ExpenseDAO{
         }
         catch(SQLException e){
             Logger.log("Expenses were not found; please check database access and that an expense exists.**\n", LogLevel.WARNING);
-            return expenses;
+            return null;
         }
     }
 
