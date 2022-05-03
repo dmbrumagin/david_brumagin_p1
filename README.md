@@ -71,7 +71,7 @@ interface CrudDAO<T>{
     default T updateEntity(T entity){
 
     };// update an instance 
-}
+
 
 ## Technical
 - Use of a custom logger for logging
