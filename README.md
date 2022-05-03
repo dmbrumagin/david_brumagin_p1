@@ -84,5 +84,5 @@ interface CrudDAO<T>{
 
 ## Deployment
 - The app is containerized and on dockerhub https://hub.docker.com/r/dbrumagin/project1/
-- The app is deployed on an EC2 for your presentation http://expense.eba-9m4h5zyu.us-east-1.elasticbeanstalk.com/
+- The app is deployed on an EC2 http://expense.eba-9m4h5zyu.us-east-1.elasticbeanstalk.com/
 - The database is PostgreSQL on an AWS RDS
